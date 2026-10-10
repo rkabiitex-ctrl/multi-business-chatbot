@@ -1,6 +1,5 @@
 
 
-
 import streamlit as st
 from openai import OpenAI
 
@@ -160,9 +159,11 @@ if user_input := st.chat_input("Type your message here..."):
                 st.session_state.messages.append({"role": "assistant", "content": ai_response})
                 
             except Exception as e:
+                st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")
 
+        
 
-
+             
 
 
 
