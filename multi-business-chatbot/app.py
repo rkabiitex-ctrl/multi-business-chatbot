@@ -53,13 +53,13 @@ st.write("Select a business category below to test how the AI adapts to capture 
 st.sidebar.markdown('<h2 class="gold-text">💳 Premium AI Packages</h2>', unsafe_allow_html=True)
 st.sidebar.write("Ready to deploy this AI Agent onto your actual business website?")
 
-st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">🔹 Standard Package</p>', unsafe_html=True)
+st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">🔹 Standard Package</p>', unsafe_allow_html=True)
 st.sidebar.write("Ideal for Dentists, Gyms, Plumbers, and Auto Parts Stores.")
 st.sidebar.link_button("Get Standard ($300/mo)", "PASTE_YOUR_300_FLUTTERWAVE_LINK")
 
 st.sidebar.write("") # Extra spacing
 
-st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">👑 Elite Luxury Package</p>', unsafe_html=True)
+st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">👑 Elite Luxury Package</p>', unsafe_allow_html=True)
 st.sidebar.write("Custom-built for Yacht Charters, Exotic Rentals, & Estate Builders.")
 st.sidebar.link_button("Get Elite ($500/mo)", "PASTE_YOUR_500_FLUTTERWAVE_LINK")
 
@@ -155,6 +155,9 @@ if user_input := st.chat_input("Type your message here..."):
                 st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")
 
 
+
+              
+          
 
       
 
