@@ -1,10 +1,6 @@
 
 
 
-
-
-
-
 import streamlit as st
 from openai import OpenAI
 
@@ -160,6 +156,9 @@ if user_input := st.chat_input("Type your message here..."):
 
 
 
+      
+
+           
         
    
                 
