@@ -1,5 +1,6 @@
 
     
+
 import streamlit as st
 from openai import OpenAI
 
@@ -8,17 +9,35 @@ st.set_page_config(page_title="Universal AI Lead Booker", page_icon="🤖")
 st.title("🤖 Universal AI Business Booking Agent")
 st.write("Select a business category below to test how the AI adapts to capture customer leads.")
 
-# 2. Premium Upgrade Box in the Left Sidebar
-st.sidebar.title("💳 Premium Upgrades")
-st.sidebar.write("Want this automated AI Chatbot installed directly onto your real business homepage?")
-st.sidebar.link_button("Buy Chatbot Subscription ($200/mo)", "PASTE_YOUR_FLUTTERWAVE_LINK_HERE")
+# 2. Premium AI Packages in the Left Sidebar
+st.sidebar.title("💳 Premium AI Packages")
+st.sidebar.write("Ready to deploy this AI Agent onto your actual business website?")
+
+st.sidebar.subheader("🔹 Standard Package")
+st.sidebar.write("Ideal for Dentists, Gyms, Plumbers, and Auto Parts Stores.")
+st.sidebar.link_button("Get Standard ($300/mo)", "PASTE_YOUR_300_FLUTTERWAVE_LINK")
+
+st.sidebar.write("") # Extra spacing
+
+st.sidebar.subheader("👑 Elite Luxury Package")
+st.sidebar.write("Custom-built for Yacht Charters, Exotic Rentals, & Estate Builders.")
+st.sidebar.link_button("Get Elite ($500/mo)", "PASTE_YOUR_500_FLUTTERWAVE_LINK")
 
 st.sidebar.divider()
 
-# 3. Dropdown Menu for Global Business Types
+# 3. Dropdown Menu for Global High-Ticket Industries
 business_type = st.selectbox(
     "Choose an AI Agent Profile to Demo:",
-    ["Global Dental Clinic Receptionist", "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", "Emergency Plumbing Dispatcher"]
+    [
+        "Global Dental Clinic Receptionist", 
+        "Roofing & Solar Sales Closer", 
+        "Fitness Gym Membership Agent", 
+        "Emergency Plumbing Dispatcher",
+        "Luxury Exotic Car Rental Agent",
+        "Custom Luxury Home Builder Consultant",
+        "Premium Yacht Charter Concierge",
+        "Auto Parts & Accessories Specialist"
+    ]
 )
 
 # 4. Dynamically set the AI's Personality/Instructions based on selection
@@ -37,6 +56,22 @@ elif business_type == "Fitness Gym Membership Agent":
 elif business_type == "Emergency Plumbing Dispatcher":
     system_instruction = "You are an urgent, reliable customer agent for an emergency plumbing service. Be understanding and quick. Your primary goal is to get their phone number and a description of their issue so a technician can call them back immediately."
     welcome_message = "Emergency dispatch line here! Do you have an active leak, a clogged drain, or a plumbing emergency right now?"
+
+elif business_type == "Luxury Exotic Car Rental Agent":
+    system_instruction = "You are a high-end, elite concierge for a luxury exotic car rental agency managing supercars (Lamborghinis, Ferraris, Rolls-Royces). Be exclusive, polite, and efficient. Your primary goal is to find out which car they want, the dates they need it, and get their phone number and email to check fleet availability."
+    welcome_message = "Welcome to our luxury fleet concierge. Are you looking to secure an exotic rental for an upcoming trip, or checking availability on a specific supercar today?"
+
+elif business_type == "Custom Luxury Home Builder Consultant":
+    system_instruction = "You are a sophisticated architectural design consultant for a high-end custom luxury home building company. Be articulate, professional, and knowledgeable about upscale building materials. Your primary goal is to discover their budget range, intended build location, and get their contact info to schedule a design consultation with the chief architect."
+    welcome_message = "Welcome to our custom estate design portal. Are you looking to build on your own lot, or exploring architectural floor plans for a new luxury build?"
+
+elif business_type == "Premium Yacht Charter Concierge":
+    system_instruction = "You are an elite, polished concierge for a luxury yacht charter and rental brokerage. Speak with absolute refinement. Your primary goal is to find out the destination (e.g., Miami, Monaco, Bahamas), the size of their guest party, the date of travel, and capture their phone number/email to send a custom charter quote."
+    welcome_message = "Welcome to our premium charter concierge. Are you planning an upcoming private excursion, corporate event, or looking for specific yacht availabilities?"
+
+elif business_type == "Auto Parts & Accessories Specialist":
+    system_instruction = "You are an expert, helpful customer support representative for a high-volume car auto parts and performance accessories store. Be precise and technically knowledgeable. Your primary goal is to find out their vehicle's year, make, and model, determine the specific part or performance upgrade they are searching for, and capture their phone number or email to check local inventory availability immediately."
+    welcome_message = "Auto parts specialist here! What vehicle year, make, and model are we working on today, and what specific parts or upgrades are you trying to find?"
 
 st.divider()
 
@@ -77,4 +112,4 @@ if user_input := st.chat_input("Type your message here..."):
                 st.session_state.messages.append({"role": "assistant", "content": ai_response})
                 
             except Exception as e:
-                st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")                
+                st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")
