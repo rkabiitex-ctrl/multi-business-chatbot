@@ -115,6 +115,14 @@ elif business_type == "Auto Parts & Accessories Specialist":
 
 st.divider()
 
+# Track active business type to force refresh memory when dropdown switches
+if "current_business" not in st.session_state:
+    st.session_state.current_business = business_type
+
+if st.session_state.current_business != business_type:
+    st.session_state.current_business = business_type
+    st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
+
 # 6. Initialize Chat History in Streamlit Memory
 if "messages" not in st.session_state or st.sidebar.button("Reset Chat"):
     st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
@@ -152,9 +160,14 @@ if user_input := st.chat_input("Type your message here..."):
                 st.session_state.messages.append({"role": "assistant", "content": ai_response})
                 
             except Exception as e:
-                st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")
 
 
+
+
+
+
+
+           
 
               
           
