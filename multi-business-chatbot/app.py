@@ -1,7 +1,10 @@
 
 
 
-   
+
+
+
+
 import streamlit as st
 from openai import OpenAI
 
@@ -44,14 +47,14 @@ st.markdown("""
             font-weight: bold;
         }
     </style>
-""", unsafe_value=True)
+""", unsafe_allow_html=True)
 
 # Main Dashboard Title with Gold Styling
-st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_html=True)
+st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
 st.write("Select a business category below to test how the AI adapts to capture customer leads.")
 
 # 3. Premium AI Packages in the Left Sidebar
-st.sidebar.markdown('<h2 class="gold-text">💳 Premium AI Packages</h2>', unsafe_html=True)
+st.sidebar.markdown('<h2 class="gold-text">💳 Premium AI Packages</h2>', unsafe_allow_html=True)
 st.sidebar.write("Ready to deploy this AI Agent onto your actual business website?")
 
 st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">🔹 Standard Package</p>', unsafe_html=True)
@@ -153,4 +156,13 @@ if user_input := st.chat_input("Type your message here..."):
                 st.session_state.messages.append({"role": "assistant", "content": ai_response})
                 
             except Exception as e:
-                st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")              
+                st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")
+
+
+
+        
+   
+                
+            
+                   
+              
