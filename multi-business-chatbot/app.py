@@ -1,31 +1,72 @@
 
-    
 
+
+   
 import streamlit as st
 from openai import OpenAI
 
-# 1. Setup the Web Page Layout
-st.set_page_config(page_title="Universal AI Lead Booker", page_icon="🤖")
-st.title("🤖 Universal AI Business Booking Agent")
+# 1. Setup the Web Page Layout & Tab Title
+st.set_page_config(page_title="Universal AI Lead Booker", page_icon="🤖", layout="wide")
+
+# 2. Inject Custom Elite CSS Styling for Premium Themes
+st.markdown("""
+    <style>
+        /* Main page background */
+        .stApp {
+            background-color: #0d0f12 !important;
+            color: #e2e8f0 !important;
+        }
+        
+        /* Left Sidebar styling */
+        section[data-testid="stSidebar"] {
+            background-color: #13171e !important;
+            border-right: 1px solid #222c3a;
+        }
+        
+        /* Global font color fixes */
+        h1, h2, h3, p, span, label {
+            color: #f1f5f9 !important;
+        }
+        
+        /* Styling the Chat Input area */
+        .stChatInput textarea {
+            background-color: #1a202c !important;
+            color: #ffffff !important;
+            border: 1px solid #3a4659 !important;
+            border-radius: 8px !important;
+        }
+        
+        /* Custom Styling for the Luxury Headers */
+        .gold-text {
+            background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+    </style>
+""", unsafe_value=True)
+
+# Main Dashboard Title with Gold Styling
+st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_html=True)
 st.write("Select a business category below to test how the AI adapts to capture customer leads.")
 
-# 2. Premium AI Packages in the Left Sidebar
-st.sidebar.title("💳 Premium AI Packages")
+# 3. Premium AI Packages in the Left Sidebar
+st.sidebar.markdown('<h2 class="gold-text">💳 Premium AI Packages</h2>', unsafe_html=True)
 st.sidebar.write("Ready to deploy this AI Agent onto your actual business website?")
 
-st.sidebar.subheader("🔹 Standard Package")
+st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">🔹 Standard Package</p>', unsafe_html=True)
 st.sidebar.write("Ideal for Dentists, Gyms, Plumbers, and Auto Parts Stores.")
 st.sidebar.link_button("Get Standard ($300/mo)", "PASTE_YOUR_300_FLUTTERWAVE_LINK")
 
 st.sidebar.write("") # Extra spacing
 
-st.sidebar.subheader("👑 Elite Luxury Package")
+st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">👑 Elite Luxury Package</p>', unsafe_html=True)
 st.sidebar.write("Custom-built for Yacht Charters, Exotic Rentals, & Estate Builders.")
 st.sidebar.link_button("Get Elite ($500/mo)", "PASTE_YOUR_500_FLUTTERWAVE_LINK")
 
 st.sidebar.divider()
 
-# 3. Dropdown Menu for Global High-Ticket Industries
+# 4. Dropdown Menu for Global High-Ticket Industries
 business_type = st.selectbox(
     "Choose an AI Agent Profile to Demo:",
     [
@@ -40,7 +81,7 @@ business_type = st.selectbox(
     ]
 )
 
-# 4. Dynamically set the AI's Personality/Instructions based on selection
+# 5. Dynamically set the AI's Personality/Instructions based on selection
 if business_type == "Global Dental Clinic Receptionist":
     system_instruction = "You are a friendly, professional receptionist for a high-end dental clinic. Answer basic dental questions politely. Your primary goal is to get the customer's phone number or email to book them a dental checkup."
     welcome_message = "Hello! Thanks for visiting our clinic page today. Are you looking to book a routine cleaning, or do you have a quick dental question?"
@@ -75,7 +116,7 @@ elif business_type == "Auto Parts & Accessories Specialist":
 
 st.divider()
 
-# 5. Initialize Chat History in Streamlit Memory
+# 6. Initialize Chat History in Streamlit Memory
 if "messages" not in st.session_state or st.sidebar.button("Reset Chat"):
     st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
 
@@ -84,7 +125,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# 6. Handle User Chat Input
+# 7. Handle User Chat Input
 if user_input := st.chat_input("Type your message here..."):
     # Show user message
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -112,4 +153,4 @@ if user_input := st.chat_input("Type your message here..."):
                 st.session_state.messages.append({"role": "assistant", "content": ai_response})
                 
             except Exception as e:
-                st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")
+                st.error(f"Error communicating with AI. Check your OpenAI API key. Details: {e}")              
