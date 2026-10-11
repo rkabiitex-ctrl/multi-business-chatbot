@@ -1,6 +1,5 @@
 
 
-  
 import streamlit as st
 from openai import OpenAI
 
@@ -159,8 +158,7 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     st.success("Analysis Complete!")
                     st.markdown("### 🏛️ Official AI Case Evaluation Brief")
                     st.info(response.choices.message.content)
-                except Exception as e:
-
+                except Exception as e:  
 
 
                 
