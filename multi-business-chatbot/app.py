@@ -180,7 +180,22 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
                 
                 audio_bytes = audio_response.content
 
+  # Step B: Generate Luxury Spoken Audio narration (Text-to-Speech)
+                audio_response = client.audio.speech.create(
+                    model="tts-1",
+                    voice="alloy",
+                    input=ai_text
+                )
+                
+                audio_bytes = audio_response.content
+                st.audio(audio_bytes, format="audio/mp3")
 
+                # Save both to history log
+                st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_bytes})
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"System Error: {e}. Check your OpenAI credit balance or key config.")
              
 
 
