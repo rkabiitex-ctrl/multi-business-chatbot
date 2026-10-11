@@ -1,6 +1,4 @@
 
-
-
 import streamlit as st
 from openai import OpenAI
 
@@ -122,7 +120,6 @@ if "messages" not in st.session_state or st.sidebar.button("Reset Chat"):
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
-        # If there's an audio response generated, show it under the message card
         if "audio" in msg:
             st.audio(msg["audio"], format="audio/mp3")
 
@@ -136,7 +133,6 @@ user_message = None
 if voice_input is not None:
     try:
         client = OpenAI()
-        # Save voice bytes temporarily and send to OpenAI Whisper for Transcription
         with st.spinner("Analyzing voice command..."):
             transcription = client.audio.transcriptions.create(
                 model="whisper-1", 
@@ -157,13 +153,12 @@ if user_message:
     st.rerun()
 
 # Generate Response if user just submitted a message
-if st.session_state.messages[-1]["role"] == "user":
+if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] == "user":
     with st.chat_message("assistant"):
         with st.spinner("Processing ChatGPT response & voice narration..."):
             try:
                 client = OpenAI()
                 
-                # Build context history
                 api_messages = [{"role": "system", "content": system_instruction}]
                 for m in st.session_state.messages:
                     api_messages.append({"role": m["role"], "content": m["content"]})
@@ -179,8 +174,12 @@ if st.session_state.messages[-1]["role"] == "user":
                 # Step B: Generate Luxury Spoken Audio narration (Text-to-Speech)
                 audio_response = client.audio.speech.create(
                     model="tts-1",
-                    voice="alloy", # Elegant, professional voice avatar
-        
+                    voice="alloy",
+                    input=ai_text
+                )
+                
+                audio_bytes = audio_response.content
+
 
              
 
