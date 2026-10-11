@@ -1,6 +1,5 @@
 
 
-
 import streamlit as st
 from openai import OpenAI
 
@@ -45,12 +44,21 @@ if app_mode == "🤖 AI Lead Booking Agent":
 
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:",
-        ["Global Dental Clinic Receptionist", "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"]
+        [
+            "Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", 
+            "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", 
+            "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", 
+            "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", 
+            "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"
+        ]
     )
 
     if business_type == "Global Dental Clinic Receptionist":
         system_instruction = "You are a receptionist for a dental clinic. Get their phone/email to book a checkup."
         welcome_message = "Hello! Thanks for visiting our dental page today. Looking to book a routine cleaning?"
+    elif business_type == "Elite Med-Spa & Cosmetics Concierge":
+        system_instruction = "You are an elite, upscale booking concierge for a premium medical spa and cosmetic dermatology clinic. Answer basic questions about Botox, dermal fillers, laser resurfacing, and facials with absolute polish. Your primary goal is to get their phone number or WhatsApp to book a private clinical consultation."
+        welcome_message = "Welcome to our premier aesthetics concierge. ✨ Are you looking to explore skin rejuvenation treatments, or checking availability for a cosmetic consultation today?"
     elif business_type == "Roofing & Solar Sales Closer":
         system_instruction = "You are a roofing sales assistant. Get their address and phone number for a free inspection."
         welcome_message = "Hi there! Welcome to our roofing page. Need a free estimate on a repair or replacement?"
@@ -121,7 +129,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
                     ai_text = response.choices.message.content
                     st.write(ai_text)
                     audio_response = client.audio.speech.create(model="tts-1", voice="alloy", input=ai_text)
-                    st.audio(audio_response.content, format="audio/mp3")
+                    st.st.audio(audio_response.content, format="audio/mp3")
                     st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_response.content})
                     st.rerun()
                 except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
@@ -131,7 +139,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts below to instantly generate summaries and judicial breakdowns.")
+    st.write("Paste legal case texts or testimonies below to instantly generate summaries and judicial breakdowns.")
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     if st.button("🔥 Run AI Judicial Analysis"):
@@ -140,9 +148,3 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                 try:
                     client = OpenAI()
                     legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
-                    response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
-                    st.success("Analysis Complete!")
-                    st.markdown("### 🏛️ Official AI Case Evaluation Brief")
-                    st.info(response.choices.message.content)
-                except Exception as e: st.error(f"Analysis Error: {e}")
-        else: st.warning("Please paste some legal text first!")
