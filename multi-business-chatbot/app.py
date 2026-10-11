@@ -14,6 +14,10 @@ st.markdown("""
         section[data-testid="stSidebar"] { background-color: #13171e !important; border-right: 1px solid #222c3a; }
         h1, h2, h3, p, span, label { color: #f1f5f9 !important; }
         .stChatInput textarea { background-color: #1a202c !important; color: #ffffff !important; border: 1px solid #3a4659 !important; border-radius: 8px !important; }
+        
+        /* FIX: Forces all text inside input boxes and text areas to be clear dark grey/black for perfect readability */
+        .stTextArea textarea, .stTextInput input { color: #1e293b !important; font-weight: 500 !important; }
+        
         .gold-text { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
@@ -156,9 +160,7 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     st.markdown("### 🏛️ Official AI Case Evaluation Brief")
                     st.info(response.choices.message.content)
                 except Exception as e:
-                    st.error(f"Analysis Error: {e}")
-        else:
-            st.warning("Please paste some legal text first!")
-   
+
+
 
                 
