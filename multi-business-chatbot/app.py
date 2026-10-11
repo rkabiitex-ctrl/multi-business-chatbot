@@ -1,5 +1,4 @@
 
-
 import streamlit as st
 from openai import OpenAI
 
@@ -57,8 +56,8 @@ if app_mode == "🤖 AI Lead Booking Agent":
         system_instruction = "You are a receptionist for a dental clinic. Get their phone/email to book a checkup."
         welcome_message = "Hello! Thanks for visiting our dental page today. Looking to book a routine cleaning?"
     elif business_type == "Elite Med-Spa & Cosmetics Concierge":
-        system_instruction = "You are an elite, upscale booking concierge for a premium medical spa and cosmetic dermatology clinic. Answer basic questions about Botox, dermal fillers, laser resurfacing, and facials with absolute polish. Your primary goal is to get their phone number or WhatsApp to book a private clinical consultation."
-        welcome_message = "Welcome to our premier aesthetics concierge. ✨ Are you looking to explore skin rejuvenation treatments, or checking availability for a cosmetic consultation today?"
+        system_instruction = "You are an elite booking concierge for a premium medical spa. Answer questions about Botox, fillers, and skincare. Get their phone number or WhatsApp to book an aesthetics consultation."
+        welcome_message = "Welcome to our premier aesthetics concierge. ✨ Looking to explore skin treatments or book a cosmetic consultation today?"
     elif business_type == "Roofing & Solar Sales Closer":
         system_instruction = "You are a roofing sales assistant. Get their address and phone number for a free inspection."
         welcome_message = "Hi there! Welcome to our roofing page. Need a free estimate on a repair or replacement?"
@@ -129,7 +128,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
                     ai_text = response.choices.message.content
                     st.write(ai_text)
                     audio_response = client.audio.speech.create(model="tts-1", voice="alloy", input=ai_text)
-                    st.st.audio(audio_response.content, format="audio/mp3")
+                    st.audio(audio_response.content, format="audio/mp3")
                     st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_response.content})
                     st.rerun()
                 except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
@@ -148,3 +147,4 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                 try:
                     client = OpenAI()
                     legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
+                    response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
