@@ -1,5 +1,5 @@
 
- 
+
 import streamlit as st
 from openai import OpenAI
 
@@ -39,7 +39,7 @@ st.sidebar.divider()
 # ==========================================
 if app_mode == "🤖 AI Lead Booking Agent":
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
-    st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
+    st.write("Select a business category below to test how the AI adapts to capture customer leads.")
 
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:",
@@ -138,24 +138,24 @@ if app_mode == "🤖 AI Lead Booking Agent":
                     st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_bytes})
                     st.rerun()
                 except Exception as e:
-                    st.error(f"System Error: {e}. Check your OpenAI balance or key config.")
+                    st.error(f"System Error: {e}. Check your OpenAI balance.")
 
 # ==========================================
 # PAGE 2: THE JUDICIAL CASE ANALYZER
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Upload court transcripts or legal briefs to instantly generate summaries and judicial breakdowns.")
+    st.write("Paste legal case texts or testimonies below to instantly generate summaries and judicial breakdowns.")
     st.divider()
     
-    case_text = st.text_area("Paste Case Legal Text / Transcript Here:", height=250, placeholder="Paste case backgrounds or testimonies here...")
+    case_text = st.text_area("Paste Case Legal Text / Transcript Here:", height=250, placeholder="Paste case backgrounds here...")
     
     if st.button("🔥 Run AI Judicial Analysis"):
         if case_text:
             with st.spinner("Compiling judicial brief..."):
                 try:
                     client = OpenAI()
-                    legal_instruction = "You are a senior judicial counsel. Analyze the court text. Break it down into 4 clear parts: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RULING RECOMMENDATION."
+                    legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
                     
                     response = client.chat.completions.create(
                         model="gpt-4o-mini",
@@ -164,6 +164,5 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                             {"role": "user", "content": case_text}
                         ]
                     )
-                    
-                    analysis_result = response.choices.message.content                   
-              
+                    st.success("Analysis Complete!")
+                    st.markdown("### 🏛️ Official AI Case Evaluation Brief")
