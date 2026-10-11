@@ -1,5 +1,4 @@
 
-
 import streamlit as st
 from openai import OpenAI
 
@@ -156,13 +155,10 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                 try:
                     client = OpenAI()
                     legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
-                    
                     response = client.chat.completions.create(
                         model="gpt-4o-mini",
-                        messages=[
-                            {"role": "system", "content": legal_instruction},
-                            {"role": "user", "content": case_text}
-                        ]
+                        messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}]
                     )
                     st.success("Analysis Complete!")
                     st.markdown("### 🏛️ Official AI Case Evaluation Brief")
+                    st.info(response.choices.message.content)
