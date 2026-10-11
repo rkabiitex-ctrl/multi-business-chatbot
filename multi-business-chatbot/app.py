@@ -1,9 +1,7 @@
 
-
-
+ 
 import streamlit as st
 from openai import OpenAI
-import os
 
 # 1. Setup the Web Page Layout & Tab Title
 st.set_page_config(page_title="Elite AI Workspace", page_icon="🤖", layout="wide")
@@ -22,7 +20,6 @@ st.markdown("""
 # 3. Sidebar App Navigation Control Hub
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
 app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
-
 st.sidebar.divider()
 
 # 4. Premium AI Packages in the Left Sidebar
@@ -36,7 +33,6 @@ st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">�
 st.sidebar.write("Custom-built for Courts, Law Firms, Yacht Charters, & Developers.")
 st.sidebar.link_button("Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
 st.sidebar.divider()
-
 
 # ==========================================
 # PAGE 1: THE BUSINESS & LEAD BOOKING AGENT
@@ -144,28 +140,30 @@ if app_mode == "🤖 AI Lead Booking Agent":
                 except Exception as e:
                     st.error(f"System Error: {e}. Check your OpenAI balance or key config.")
 
-
 # ==========================================
-# PAGE 2: THE JUDICIAL CASE ANALYZER (NEW!)
+# PAGE 2: THE JUDICIAL CASE ANALYZER
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Upload court transcripts, case briefs, or legal petitions to instantly generate deep contextual briefings, timelines, and ruling summaries.")
-    
+    st.write("Upload court transcripts or legal briefs to instantly generate summaries and judicial breakdowns.")
     st.divider()
     
-    # Text input box for quick case summaries since streaming files requires extra libraries
-    case_text = st.text_area("Paste Case Legal Text / Transcript Here:", height=250, placeholder="Paste court background, charge sheets, witness statements, or legal contract clauses here for instant analysis...")
+    case_text = st.text_area("Paste Case Legal Text / Transcript Here:", height=250, placeholder="Paste case backgrounds or testimonies here...")
     
     if st.button("🔥 Run AI Judicial Analysis"):
         if case_text:
-            with st.spinner("Decoding legal framework and compiling judicial brief..."):
+            with st.spinner("Compiling judicial brief..."):
                 try:
                     client = OpenAI()
+                    legal_instruction = "You are a senior judicial counsel. Analyze the court text. Break it down into 4 clear parts: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RULING RECOMMENDATION."
                     
-                    legal_instruction = """You are a senior judicial legal counsel assistant. Analyze the court/case text provided. Break it down into four distinct, professional headers: 
-                    1. 📋 CORE CASE FACTS (Who is involved, dates, and what happened).
-                    2. 🔍 ARGUMENTS & CLAIMS (What the plaintiff/defense are demanding).
-            
-                   
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": legal_instruction},
+                            {"role": "user", "content": case_text}
+                        ]
+                    )
+                    
+                    analysis_result = response.choices.message.content                   
               
