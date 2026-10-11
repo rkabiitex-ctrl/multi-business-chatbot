@@ -1,8 +1,5 @@
 
-
-
-
-  import streamlit as st
+import streamlit as st
 from openai import OpenAI
 
 # 1. Setup the Web Page Layout & Tab Title
@@ -168,9 +165,9 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
                 client = OpenAI()
                 
                 api_messages = [{"role": "system", "content": system_instruction}]
-                for m in st.session_state.messages:            
-          
+                for m in st.session_state.messages:
 
+             
       
 
 
