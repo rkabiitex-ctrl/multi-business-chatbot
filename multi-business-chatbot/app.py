@@ -1,4 +1,6 @@
 
+
+
 import streamlit as st
 from openai import OpenAI
 
@@ -138,7 +140,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts or testimonies below to instantly generate summaries and judicial breakdowns.")
+    st.write("Paste legal case texts below to instantly generate summaries and judicial breakdowns.")
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     if st.button("🔥 Run AI Judicial Analysis"):
