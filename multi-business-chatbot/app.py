@@ -1,7 +1,8 @@
 
 
 
-import streamlit as st
+
+  import streamlit as st
 from openai import OpenAI
 
 # 1. Setup the Web Page Layout & Tab Title
@@ -166,28 +167,13 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
             try:
                 client = OpenAI()
                 
-
-        
-           
-
-              
+                api_messages = [{"role": "system", "content": system_instruction}]
+                for m in st.session_state.messages:            
           
 
       
 
-           
-        ### 🛠️ What to do right now on your laptop:
-1. Copy this **complete master code block** from top to bottom.
-2. Go to your GitHub repository editor tab for `app.py`.
-3. Wipe the old code out completely and paste this exact script right back in.
-4. Hit **`Commit changes...`** and confirm the save.
 
-<FollowUp>
-Once you successfully save this on GitHub, go to your **live website link**, refresh the page, and open your dropdown profile selector. Let me know:
-* Do you see the brand new **General ChatGPT AI Workspace** listing at the bottom of the dropdown menu?
-* Does it successfully switch to its own custom greeting without errors?
-</FollowUp>
-   
                 
             
                    
