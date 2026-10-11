@@ -1,5 +1,6 @@
 
 
+
 import streamlit as st
 from openai import OpenAI
 
@@ -13,10 +14,7 @@ st.markdown("""
         section[data-testid="stSidebar"] { background-color: #13171e !important; border-right: 1px solid #222c3a; }
         h1, h2, h3, p, span, label { color: #f1f5f9 !important; }
         .stChatInput textarea { background-color: #1a202c !important; color: #ffffff !important; border: 1px solid #3a4659 !important; border-radius: 8px !important; }
-        
-        /* FIX: Forces all text inside input boxes and text areas to be clear dark grey/black for perfect readability */
         .stTextArea textarea, .stTextInput input { color: #1e293b !important; font-weight: 500 !important; }
-        
         .gold-text { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
@@ -47,13 +45,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
 
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:",
-        [
-            "Global Dental Clinic Receptionist", "Roofing & Solar Sales Closer", 
-            "Fitness Gym Membership Agent", "Emergency Plumbing Dispatcher",
-            "Luxury Exotic Car Rental Agent", "Custom Luxury Home Builder Consultant",
-            "Premium Yacht Charter Concierge", "Auto Parts & Accessories Specialist",
-            "General ChatGPT AI Workspace"
-        ]
+        ["Global Dental Clinic Receptionist", "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"]
     )
 
     if business_type == "Global Dental Clinic Receptionist":
@@ -86,8 +78,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
 
     st.divider()
 
-    if "current_business" not in st.session_state:
-        st.session_state.current_business = business_type
+    if "current_business" not in st.session_state: st.session_state.current_business = business_type
     if st.session_state.current_business != business_type:
         st.session_state.current_business = business_type
         st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
@@ -98,8 +89,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
-            if "audio" in msg:
-                st.audio(msg["audio"], format="audio/mp3")
+            if "audio" in msg: st.audio(msg["audio"], format="audio/mp3")
 
     st.markdown('<p style="color: #bf953f; font-weight: bold;">🎙️ Voice Command Feature</p>', unsafe_allow_html=True)
     voice_input = st.audio_input("Tap the microphone below to speak your request:")
@@ -111,12 +101,10 @@ if app_mode == "🤖 AI Lead Booking Agent":
             with st.spinner("Analyzing voice command..."):
                 transcription = client.audio.transcriptions.create(model="whisper-1", file=voice_input)
                 user_message = transcription.text
-        except Exception as e:
-            st.error(f"Voice Error: {e}")
+        except Exception as e: st.error(f"Voice Error: {e}")
 
     chat_input = st.chat_input("Or type your message here manually...")
-    if chat_input:
-        user_message = chat_input
+    if chat_input: user_message = chat_input
 
     if user_message:
         st.session_state.messages.append({"role": "user", "content": user_message})
@@ -128,8 +116,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
                 try:
                     client = OpenAI()
                     api_messages = [{"role": "system", "content": system_instruction}]
-                    for m in st.session_state.messages:
-                        api_messages.append({"role": m["role"], "content": m["content"]})
+                    for m in st.session_state.messages: api_messages.append({"role": m["role"], "content": m["content"]})
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
                     ai_text = response.choices.message.content
                     st.write(ai_text)
@@ -137,15 +124,14 @@ if app_mode == "🤖 AI Lead Booking Agent":
                     st.audio(audio_response.content, format="audio/mp3")
                     st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_response.content})
                     st.rerun()
-                except Exception as e:
-                    st.error(f"System Error: {e}. Check your OpenAI balance.")
+                except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
 
 # ==========================================
 # PAGE 2: THE JUDICIAL CASE ANALYZER
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts or testimonies below to instantly generate summaries and judicial breakdowns.")
+    st.write("Paste legal case texts below to instantly generate summaries and judicial breakdowns.")
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     if st.button("🔥 Run AI Judicial Analysis"):
@@ -158,7 +144,5 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     st.success("Analysis Complete!")
                     st.markdown("### 🏛️ Official AI Case Evaluation Brief")
                     st.info(response.choices.message.content)
-                except Exception as e:  
-
-
-                
+                except Exception as e: st.error(f"Analysis Error: {e}")
+        else: st.warning("Please paste some legal text first!")
