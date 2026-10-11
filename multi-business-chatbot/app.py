@@ -39,7 +39,7 @@ st.sidebar.divider()
 # ==========================================
 if app_mode == "🤖 AI Lead Booking Agent":
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
-    st.write("Select a business category below to test how the AI adapts to capture customer leads.")
+    st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
 
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:",
@@ -138,7 +138,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
                     st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_bytes})
                     st.rerun()
                 except Exception as e:
-                    st.error(f"System Error: {e}. Check your OpenAI balance.")
+                    st.error(f"System Error: {e}. Check your OpenAI balance or key config.")
 
 # ==========================================
 # PAGE 2: THE JUDICIAL CASE ANALYZER
