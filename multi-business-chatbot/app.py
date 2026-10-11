@@ -1,4 +1,6 @@
 
+
+
 import streamlit as st
 from openai import OpenAI
 
@@ -54,7 +56,7 @@ st.sidebar.link_button("Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
 
 st.sidebar.divider()
 
-# 4. Dropdown Menu for Global High-Ticket Industries
+# 4. Dropdown Menu for Global High-Ticket Industries & General AI Workspace
 business_type = st.selectbox(
     "Choose an AI Agent Profile to Demo:",
     [
@@ -65,7 +67,8 @@ business_type = st.selectbox(
         "Luxury Exotic Car Rental Agent",
         "Custom Luxury Home Builder Consultant",
         "Premium Yacht Charter Concierge",
-        "Auto Parts & Accessories Specialist"
+        "Auto Parts & Accessories Specialist",
+        "General ChatGPT AI Workspace"
     ]
 )
 
@@ -101,6 +104,10 @@ elif business_type == "Premium Yacht Charter Concierge":
 elif business_type == "Auto Parts & Accessories Specialist":
     system_instruction = "You are an expert, helpful customer support representative for a car auto parts store. Be precise and technically knowledgeable like ChatGPT. Your primary goal is to find out their vehicle's year, make, and model, determine the part needed, and capture their phone number or email."
     welcome_message = "Auto parts specialist here! What vehicle year, make, and model are we working on today, and what specific parts or upgrades are you trying to find?"
+
+elif business_type == "General ChatGPT AI Workspace":
+    system_instruction = "You are ChatGPT, a highly helpful, intelligent, and versatile AI assistant. Answer any question the user throws at you—whether it is creative writing, schoolwork, coding, advice, or general knowledge. Be highly responsive, articulate, and supportive. Do NOT ask for phone numbers, emails, addresses, or mention business bookings. Just provide pure value."
+    welcome_message = "Welcome to your General ChatGPT AI Workspace! 🚀 I am fully unlocked to help you with anything. Ask me a general knowledge question, tell me to write a story, solve a problem, or speak a voice command!"
 
 st.divider()
 
@@ -159,48 +166,8 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
             try:
                 client = OpenAI()
                 
-                api_messages = [{"role": "system", "content": system_instruction}]
-                for m in st.session_state.messages:
-                    api_messages.append({"role": m["role"], "content": m["content"]})
-                
-                # Step A: Generate ChatGPT-like Text Response
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=api_messages
-                )
-                ai_text = response.choices.message.content
-                st.write(ai_text)
-                
-                # Step B: Generate Luxury Spoken Audio narration (Text-to-Speech)
-                audio_response = client.audio.speech.create(
-                    model="tts-1",
-                    voice="alloy",
-                    input=ai_text
-                )
-                
-                audio_bytes = audio_response.content
 
-  # Step B: Generate Luxury Spoken Audio narration (Text-to-Speech)
-                audio_response = client.audio.speech.create(
-                    model="tts-1",
-                    voice="alloy",
-                    input=ai_text
-                )
-                
-                audio_bytes = audio_response.content
-                st.audio(audio_bytes, format="audio/mp3")
-
-                # Save both to history log
-                st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_bytes})
-                st.rerun()
-
-            except Exception as e:
-                st.error(f"System Error: {e}. Check your OpenAI credit balance or key config.")
-             
-
-
-
-
+        
            
 
               
@@ -209,7 +176,17 @@ if len(st.session_state.messages) > 0 and st.session_state.messages[-1]["role"] 
       
 
            
-        
+        ### 🛠️ What to do right now on your laptop:
+1. Copy this **complete master code block** from top to bottom.
+2. Go to your GitHub repository editor tab for `app.py`.
+3. Wipe the old code out completely and paste this exact script right back in.
+4. Hit **`Commit changes...`** and confirm the save.
+
+<FollowUp>
+Once you successfully save this on GitHub, go to your **live website link**, refresh the page, and open your dropdown profile selector. Let me know:
+* Do you see the brand new **General ChatGPT AI Workspace** listing at the bottom of the dropdown menu?
+* Does it successfully switch to its own custom greeting without errors?
+</FollowUp>
    
                 
             
