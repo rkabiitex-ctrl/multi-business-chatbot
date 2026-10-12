@@ -1,6 +1,3 @@
-
-
-
 import streamlit as st
 from openai import OpenAI
 
@@ -124,22 +121,16 @@ if app_mode == "🤖 AI Lead Booking Agent":
             with st.spinner("Processing response..."):
                 try:
                     client = OpenAI()
-                    
-                    # PROFESSIONAL FIX: Securely rebuild conversation payload to adhere to new API parameters
                     api_messages = [{"role": "system", "content": system_instruction}]
                     for m in st.session_state.messages:
                         if m["role"] in ["user", "assistant"]:
                             api_messages.append({"role": m["role"], "content": str(m["content"])})
-                    
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-                    ai_text = response.choices[0].message.content
+                    ai_text = response.choices.message.content
                     st.write(ai_text)
-                    
                     audio_response = client.audio.speech.create(model="tts-1", voice="alloy", input=ai_text)
-                    audio_bytes = audio_response.content
-                    st.audio(audio_bytes, format="audio/mp3")
-                    
-                    st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_bytes})
+                    st.audio(audio_response.content, format="audio/mp3")
+                    st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_response.content})
                     st.rerun()
                 except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
 
@@ -148,7 +139,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts below to instantly generate summaries.")
+    st.write("Paste legal case texts below to instantly generate summaries and judicial breakdowns.")
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     if st.button("🔥 Run AI Judicial Analysis"):
@@ -156,3 +147,4 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
             with st.spinner("Compiling judicial brief..."):
                 try:
                     client = OpenAI()
+                    legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
