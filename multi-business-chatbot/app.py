@@ -1,13 +1,11 @@
 
 
 
-import streamlit as st
+mport streamlit as st
 from openai import OpenAI
 
-# 1. Setup the Web Page Layout & Tab Title
 st.set_page_config(page_title="Elite AI Workspace", page_icon="🤖", layout="wide")
 
-# 2. Inject Custom Elite CSS Styling for Premium Themes
 st.markdown("""
     <style>
         .stApp { background-color: #0d0f12 !important; color: #e2e8f0 !important; }
@@ -19,12 +17,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Sidebar App Navigation Control Hub
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
 app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
 st.sidebar.divider()
 
-# 4. Premium AI Packages in the Left Sidebar
 st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
 st.sidebar.write("Ready to deploy this system onto your real organization website?")
 st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">🔹 Standard Package</p>', unsafe_allow_html=True)
@@ -36,22 +32,13 @@ st.sidebar.write("Custom-built for Courts, Law Firms, Yacht Charters, & Develope
 st.sidebar.link_button("Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
 st.sidebar.divider()
 
-# ==========================================
-# PAGE 1: THE BUSINESS & LEAD BOOKING AGENT
-# ==========================================
 if app_mode == "🤖 AI Lead Booking Agent":
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
     st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
 
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:",
-        [
-            "Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", 
-            "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", 
-            "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", 
-            "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", 
-            "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"
-        ]
+        ["Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"]
     )
 
     if business_type == "Global Dental Clinic Receptionist":
@@ -135,12 +122,9 @@ if app_mode == "🤖 AI Lead Booking Agent":
                     st.rerun()
                 except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
 
-# ==========================================
-# PAGE 2: THE JUDICIAL CASE ANALYZER
-# ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts below to instantly generate summaries and judicial breakdowns.")
+    st.write("Paste legal case texts below to instantly generate summaries.")
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     if st.button("🔥 Run AI Judicial Analysis"):
@@ -148,5 +132,11 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
             with st.spinner("Compiling judicial brief..."):
                 try:
                     client = OpenAI()
-                    legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
+                    legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED RECOMMENDATION."
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
+                    st.success("Analysis Complete!")
+                    st.markdown("### 🏛️ Official AI Case Evaluation Brief")
+                    st.info(response.choices.message.content)
+                except Exception as e: st.error(f"Analysis Error: {e}")
+        else: st.warning("Please paste some legal text first!")
+Use code with caution.
