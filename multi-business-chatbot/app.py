@@ -125,14 +125,10 @@ if app_mode == "🤖 AI Lead Booking Agent":
                 try:
                     client = OpenAI()
                     api_messages = [{"role": "system", "content": system_instruction}]
-                    for m in st.session_state.messages:
-                        api_messages.append({"role": m["role"], "content": m["content"]})
-                    
-                    # FIX: Correctly reading the API text endpoint architecture rules
+                    for m in st.session_state.messages: api_messages.append({"role": m["role"], "content": m["content"]})
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-                    ai_text = response.choices[0].message.content
+                    ai_text = response.choices.message.content
                     st.write(ai_text)
-                    
                     audio_response = client.audio.speech.create(model="tts-1", voice="alloy", input=ai_text)
                     st.audio(audio_response.content, format="audio/mp3")
                     st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_response.content})
@@ -144,7 +140,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts or testimonies below to instantly generate summaries and judicial breakdowns.")
+    st.write("Paste legal case texts below to instantly generate summaries and judicial breakdowns.")
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     if st.button("🔥 Run AI Judicial Analysis"):
@@ -153,3 +149,4 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                 try:
                     client = OpenAI()
                     legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
+                    response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
