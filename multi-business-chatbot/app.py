@@ -139,4 +139,3 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     st.info(response.choices.message.content)
                 except Exception as e: st.error(f"Analysis Error: {e}")
         else: st.warning("Please paste some legal text first!")
-Use code with caution.
