@@ -1,585 +1,141 @@
-import os
-import csv
-import io
-from datetime import datetime
-
 import streamlit as st
+from openai import OpenAI
 
-try:
-    from openai import OpenAI
-except ImportError:
-    OpenAI = None
+# 1. Setup the Web Page Layout & Tab Title
+st.set_page_config(page_title="Elite AI Workspace", page_icon="🤖", layout="wide")
 
-
-# --------------------------------------------------
-# PAGE CONFIGURATION
-# --------------------------------------------------
-
-st.set_page_config(
-    page_title="Universal AI Business Suite",
-    page_icon="✨",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-
-# --------------------------------------------------
-# PROFESSIONAL DESIGN
-# --------------------------------------------------
-
+# 2. Inject Custom Elite CSS Styling for Premium Themes
 st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Manrope', sans-serif;
-}
-
-.stApp {
-    background: #0b0e13;
-    color: #f4f5f7;
-}
-
-[data-testid="stSidebar"] {
-    background: #141923;
-    border-right: 1px solid #303744;
-}
-
-.hero {
-    padding: 30px;
-    border-radius: 20px;
-    border: 1px solid #4c4328;
-    background: linear-gradient(120deg, #20232b, #171912);
-    margin-bottom: 25px;
-}
-
-.hero h1 {
-    color: #f2d780;
-    font-size: clamp(28px, 4vw, 46px);
-    font-weight: 800;
-}
-
-.hero p {
-    color: #c6ccd5;
-    font-size: 16px;
-}
-
-.section {
-    background: #171c25;
-    padding: 22px;
-    border: 1px solid #303744;
-    border-radius: 16px;
-    margin-bottom: 18px;
-}
-
-div[data-testid="stMetric"] {
-    background: #171c25;
-    border: 1px solid #303744;
-    border-radius: 14px;
-    padding: 16px;
-}
-
-div[data-testid="stMetricValue"] {
-    color: #f2d780;
-}
-
-div.stButton > button,
-div.stDownloadButton > button {
-    border-radius: 10px;
-    min-height: 42px;
-    font-weight: 700;
-}
-
-div.stButton > button[kind="primary"] {
-    background: #d8b65a;
-    color: #111319;
-    border: none;
-}
-
-div.stButton > button[kind="primary"]:hover {
-    background: #f2d780;
-    color: #111319;
-}
-
-.stTextInput input,
-.stTextArea textarea {
-    border-radius: 10px;
-}
-
-hr {
-    border-color: #303744;
-}
-</style>
+    <style>
+        .stApp { background-color: #0d0f12 !important; color: #e2e8f0 !important; }
+        section[data-testid="stSidebar"] { background-color: #13171e !important; border-right: 1px solid #222c3a; }
+        h1, h2, h3, p, span, label { color: #f1f5f9 !important; }
+        .stChatInput textarea { background-color: #1a202c !important; color: #ffffff !important; border: 1px solid #3a4659 !important; border-radius: 8px !important; }
+        .stTextArea textarea, .stTextInput input { color: #1e293b !important; font-weight: 500 !important; }
+        .gold-text { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        
+        /* CLEAN OVERRIDE: Styles text elements inside the sidebar nicely */
+        .package-header { color: #bf953f !important; font-weight: bold !important; font-size: 18px !important; margin-bottom: 2px !important; }
+        .package-desc { color: #e2e8f0 !important; font-size: 14px !important; margin-bottom: 10px !important; }
+    </style>
 """, unsafe_allow_html=True)
 
+# 3. Sidebar App Navigation Control Hub
+st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
+st.sidebar.write("")  
+app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
+st.sidebar.divider()
 
-# --------------------------------------------------
-# BUSINESS PROFILES
-# --------------------------------------------------
+# 4. Premium AI Packages in the Left Sidebar
+st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
+st.sidebar.write("Ready to deploy this system onto your real organization website?")
+st.sidebar.divider()
 
-PROFILES = {
-    "Dental Clinic": (
-        "Dental Receptionist",
-        "Welcome to our dental clinic! Would you like to book a cleaning, "
-        "consultation, or another dental service?"
-    ),
-    "Salon & Barber": (
-        "Salon Booking Assistant",
-        "Welcome! Which service would you like to book: a haircut, styling, "
-        "braiding, or another service?"
-    ),
-    "Hotel & Guest House": (
-        "Hospitality Assistant",
-        "Welcome! I can help with a room enquiry. What dates are you "
-        "considering, and how many guests will be staying?"
-    ),
-    "Real Estate": (
-        "Property Enquiry Assistant",
-        "Welcome! Are you looking to rent, buy, or sell a property?"
-    ),
-    "Retail Store": (
-        "Retail Sales Assistant",
-        "Welcome to our store! Which product are you interested in?"
-    ),
-    "General Business": (
-        "Customer Service Assistant",
-        "Hello! Thank you for contacting us. What service can we help you with?"
-    ),
-}
+# Standard Package Layout
+st.sidebar.markdown('<p class="package-header">🔹 Standard Package</p>', unsafe_allow_html=True)
+st.sidebar.markdown('<p class="package-desc">Ideal for Businesses, Clinics, and Stores.</p>', unsafe_allow_html=True)
+st.sidebar.link_button("✨ Get Standard ($300/mo)", "PASTE_YOUR_300_PESAPAL_LINK")
+st.sidebar.write("")
 
+# Elite Package Layout
+st.sidebar.markdown('<p class="package-header">👑 Elite Luxury Package</p>', unsafe_allow_html=True)
+st.sidebar.markdown('<p class="package-desc">Custom-built for Courts, Law Firms, Yacht Charters, & Developers.</p>', unsafe_allow_html=True)
+st.sidebar.link_button("👑 Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
+st.sidebar.divider()
 
-# --------------------------------------------------
-# SESSION DATA
-# --------------------------------------------------
+# ==========================================
+# PAGE 1: THE BUSINESS & LEAD BOOKING AGENT
+# ==========================================
+if app_mode == "🤖 AI Lead Booking Agent":
+    st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
+    st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-if "leads" not in st.session_state:
-    st.session_state.leads = []
-
-if "case_result" not in st.session_state:
-    st.session_state.case_result = ""
-
-
-def get_ai_client():
-    """Read the API key from Streamlit secrets or environment."""
-    try:
-        key = st.secrets.get("OPENAI_API_KEY", "")
-    except Exception:
-        key = ""
-
-    key = key or os.getenv("OPENAI_API_KEY", "")
-
-    if key and OpenAI:
-        return OpenAI(api_key=key)
-
-    return None
-
-
-def ask_ai(system_prompt, user_prompt):
-    """Return an AI response, or None when AI is not configured."""
-    client = get_ai_client()
-
-    if client is None:
-        return None
-
-    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-
-    try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=0.3,
-        )
-
-        return response.choices[0].message.content.strip()
-
-    except Exception:
-        return None
-
-
-# --------------------------------------------------
-# SIDEBAR NAVIGATION
-# --------------------------------------------------
-
-with st.sidebar:
-    st.markdown("# ✨ Universal AI")
-    st.caption("BUSINESS AUTOMATION SUITE")
-    st.divider()
-
-    page = st.radio(
-        "WORKSPACE NAVIGATION",
+    business_type = st.selectbox(
+        "Choose an AI Agent Profile to Demo:",
         [
-            "AI Lead Booking Agent",
-            "Legal & Judicial Case Analyzer",
-            "Lead Dashboard",
-            "Settings & Help",
-        ],
+            "Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", 
+            "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", 
+            "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", 
+            "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", 
+            "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"
+        ]
     )
 
-    st.divider()
-    st.markdown("### 💼 Business Packages")
-    st.markdown("**Standard Package**")
-    st.write("For clinics, shops, salons and service businesses.")
-    st.caption(
-        "Choose pricing based on your costs and the services "
-        "you actually provide."
-    )
+    if business_type == "Global Dental Clinic Receptionist":
+        system_instruction = "You are a receptionist for a dental clinic. Get their phone/email to book a checkup."
+        welcome_message = "Hello! Thanks for visiting our dental page today. Looking to book a routine cleaning?"
+    elif business_type == "Elite Med-Spa & Cosmetics Concierge":
+        system_instruction = "You are an elite booking concierge for a premium medical spa. Answer questions about Botox, fillers, and skincare. Get their phone number or WhatsApp to book an aesthetics consultation."
+        welcome_message = "Welcome to our premier aesthetics concierge. ✨ Looking to explore skin treatments or book a cosmetic consultation today?"
+    elif business_type == "Roofing & Solar Sales Closer":
+        system_instruction = "You are a roofing sales assistant. Get their address and phone number for a free inspection."
+        welcome_message = "Hi there! Welcome to our roofing page. Need a free estimate on a repair or replacement?"
+    elif business_type == "Fitness Gym Membership Agent":
+        system_instruction = "You are an energetic gym assistant. Get their email for a free 3-day workout pass."
+        welcome_message = "Let's go! Welcome to the gym portal. Ready to smash your fitness goals?"
+    elif business_type == "Emergency Plumbing Dispatcher":
+        system_instruction = "You are an urgent plumbing dispatcher. Get their phone number and emergency description immediately."
+        welcome_message = "Express Plumbing here! Do you have an active leak or emergency right now?"
+    elif business_type == "Luxury Exotic Car Rental Agent":
+        system_instruction = "You are an elite supercar concierge. Find out which car they want, dates, and get their contact info."
+        welcome_message = "Welcome to our luxury fleet concierge. Looking to secure an exotic rental for an upcoming trip?"
+    elif business_type == "Custom Luxury Home Builder Consultant":
+        system_instruction = "You are a luxury estate design consultant. Discover their budget, location, and get their phone number."
+        welcome_message = "Welcome to our custom estate design portal. Are you looking to build on your own lot?"
+    elif business_type == "Premium Yacht Charter Concierge":
+        system_instruction = "You are a polished yacht concierge. Get destination, party size, travel dates, and contact info."
+        welcome_message = "Welcome to our premium charter concierge. Planning an upcoming private excursion?"
+    elif business_type == "Auto Parts & Accessories Specialist":
+        system_instruction = "You are an expert auto parts agent. Find out vehicle year, make, model, and get their phone number."
+        welcome_message = "Auto parts specialist here! What vehicle year, make, and model are we working on today?"
+    elif business_type == "General ChatGPT AI Workspace":
+        system_instruction = "You are ChatGPT, a highly helpful, intelligent AI assistant. Provide pure value. Do NOT ask for booking details."
+        welcome_message = "Welcome to your General ChatGPT AI Workspace! 🚀 Ask me anything!"
 
-    st.divider()
-    st.caption("Prototype version · Built with Streamlit")
+    if "current_business" not in st.session_state: st.session_state.current_business = business_type
+    if st.session_state.current_business != business_type:
+        st.session_state.current_business = business_type
+        st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
 
+    if "messages" not in st.session_state or st.sidebar.button("Reset Chat", key="reset_chat_agent"):
+        st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
 
-# --------------------------------------------------
-# PAGE 1: BOOKING AGENT
-# --------------------------------------------------
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
 
-if page == "AI Lead Booking Agent":
-
-    st.markdown("""
-    <div class="hero">
-        <h1>✨ Universal AI Business Booking Agent</h1>
-        <p>
-            A smarter way to handle enquiries, organise customer requests,
-            and help businesses capture new leads.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    total_leads = len(st.session_state.leads)
-
-    c1, c2, c3 = st.columns(3)
-
-    c1.metric("Business Profiles", len(PROFILES))
-    c2.metric("Saved Lead Requests", total_leads)
-    c3.metric(
-        "AI Status",
-        "Connected" if get_ai_client() else "Demo Mode"
-    )
-
-    st.markdown("### Choose Your Business")
-
-    profile = st.selectbox(
-        "AI Agent Profile",
-        list(PROFILES.keys()),
-    )
-
-    role, greeting = PROFILES[profile]
-
-    st.markdown('<div class="section">', unsafe_allow_html=True)
-    st.markdown(f"#### 🤖 {role}")
-    st.info(greeting)
-
-    st.markdown("### Customer Conversation")
-
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    user_message = st.chat_input(
-        "Type a customer message here..."
-    )
-
-    if user_message:
-        st.session_state.messages.append({
-            "role": "user",
-            "content": user_message,
-        })
-
-        history = "\n".join(
-            f'{m["role"]}: {m["content"]}'
-            for m in st.session_state.messages[-10:]
-        )
-
-        answer = ask_ai(
-            f"""
-            You are a friendly and professional {role}.
-            Help customers explain what service they need.
-            Ask one useful follow-up question at a time.
-            Collect relevant booking preferences and contact details.
-            Never claim a booking is confirmed or a calendar was checked.
-            Never request passwords or payment card details.
-            Keep your response under 100 words.
-            """,
-            history,
-        )
-
-        if answer is None:
-            answer = (
-                "Thank you for your message! I can help prepare your "
-                "booking request. Please tell me which service you need "
-                "and your preferred date or time."
-            )
-
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": answer,
-        })
-
-        st.rerun()
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("💾 Save Lead Request", type="primary",
-                     use_container_width=True):
-
-            if not st.session_state.messages:
-                st.warning("Start a conversation before saving a lead.")
-            else:
-                transcript = "\n".join(
-                    f'{m["role"]}: {m["content"]}'
-                    for m in st.session_state.messages
-                )
-
-                st.session_state.leads.append({
-                    "Date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                    "Business": profile,
-                    "Status": "New",
-                    "Conversation": transcript,
-                })
-
-                st.success("Lead request saved for this session.")
-
-    with col2:
-        if st.button("🗑️ Clear Conversation",
-                     use_container_width=True):
-            st.session_state.messages = []
+    chat_input = st.chat_input("Or type your message here manually...")
+    if chat_input:
+        st.session_state.messages.append({"role": "user", "content": chat_input})
+        try:
+            client = OpenAI()
+            api_messages = [{"role": "system", "content": system_instruction}]
+            for m in st.session_state.messages:
+                if m["role"] in ["user", "assistant"]:
+                    api_messages.append({"role": m["role"], "content": str(m["content"])})
+            response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
+            ai_text = response.choices.message.content
+            st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
+        except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("### Lead Capture Checklist")
-
-    st.write("- Service or product requested")
-    st.write("- Preferred appointment date and time")
-    st.write("- Customer name, if needed")
-    st.write("- Contact details, with appropriate consent")
-    st.write("- Confirmation by the actual business")
-
-
-# --------------------------------------------------
-# PAGE 2: LEGAL ANALYZER
-# --------------------------------------------------
-
-elif page == "Legal & Judicial Case Analyzer":
-
-    st.markdown("""
-    <div class="hero">
-        <h1>⚖️ Legal & Judicial Case Analyzer</h1>
-        <p>
-            Organise legal documents, summarise testimony, and identify
-            questions that require further review.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.warning(
-        "This tool provides document organisation and general information, "
-        "not legal advice. Do not enter confidential information without "
-        "appropriate permission and data protections."
-    )
-
-    jurisdiction = st.text_input(
-        "Country or jurisdiction (optional)",
-        placeholder="For example: Uganda",
-    )
-
-    case_text = st.text_area(
-        "Paste Case Legal Text Here",
-        height=260,
-        placeholder="Paste case details, testimony, or a legal document...",
-    )
-
-    if st.button("⚖️ Run Legal Analysis", type="primary",
-                 use_container_width=True):
-
-        if len(case_text.strip()) < 40:
-            st.error("Please enter more case text to analyse.")
-        else:
-            with st.spinner("Organising the case information..."):
-
-                result = ask_ai(
-                    """
-                    You help organise legal documents for general information.
-                    Do not provide definitive legal advice.
-                    Do not invent laws, citations, or court decisions.
-                    Separate allegations from facts established in the text.
-                    State when the jurisdiction or information is missing.
-                    Return these sections:
-                    1. Plain-language summary
-                    2. Parties and important events
-                    3. Evidence mentioned
-                    4. Questions and missing information
-                    5. Questions for a qualified lawyer
-                    6. Limitations and disclaimer
-                    """,
-                    f"Jurisdiction: {jurisdiction or 'Not specified'}\n\n"
-                    f"Document:\n{case_text}",
-                )
-
-                if result is None:
-                    result = f"""
-### Preliminary Case Summary
-
-{case_text[:1800]}
-
-### Details to Verify
-
-- Identify the parties and relevant dates.
-- Distinguish allegations from established facts.
-- Check which evidence and witnesses are mentioned.
-- Identify missing information and unanswered questions.
-- Confirm the applicable jurisdiction and relevant law.
-
-### Questions for Further Review
-
-- What legal issue needs to be examined?
-- Are supporting documents available?
-- What additional facts could change the analysis?
-
-### Important Disclaimer
-
-This is a basic document-organising demonstration, not legal
-advice or a prediction of a court outcome. Consult a qualified
-lawyer about the full facts and applicable law.
-"""
-
-                st.session_state.case_result = result
-
-    if st.session_state.case_result:
-        st.markdown('<div class="section">', unsafe_allow_html=True)
-        st.markdown(st.session_state.case_result)
-
-        st.download_button(
-            "📥 Download Analysis",
-            data=st.session_state.case_result,
-            file_name="case_analysis.md",
-            mime="text/markdown",
-        )
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-# --------------------------------------------------
-# PAGE 3: LEAD DASHBOARD
-# --------------------------------------------------
-
-elif page == "Lead Dashboard":
-
-    st.markdown("""
-    <div class="hero">
-        <h1>📊 Lead Management Dashboard</h1>
-        <p>Review and export customer requests collected by your agent.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.metric("Total Lead Requests", len(st.session_state.leads))
-
-    if st.session_state.leads:
-
-        st.dataframe(
-            st.session_state.leads,
-            use_container_width=True,
-            hide_index=True,
-        )
-
-        output = io.StringIO()
-
-        writer = csv.DictWriter(
-            output,
-            fieldnames=st.session_state.leads[0].keys(),
-        )
-
-        writer.writeheader()
-        writer.writerows(st.session_state.leads)
-
-        st.download_button(
-            "📥 Export Leads to CSV",
-            data=output.getvalue(),
-            file_name="business_leads.csv",
-            mime="text/csv",
-            type="primary",
-        )
-
-        if st.button("Clear Session Leads"):
-            st.session_state.leads = []
-            st.rerun()
-
-    else:
-        st.info(
-            "No leads saved yet. Start a conversation in the Booking "
-            "Agent and click Save Lead Request."
-        )
-
-    st.caption(
-        "Current limitation: session leads are temporary. A database "
-        "is required for permanent business records."
-    )
-
-
-# --------------------------------------------------
-# PAGE 4: SETTINGS AND HELP
-# --------------------------------------------------
-
-elif page == "Settings & Help":
-
-    st.markdown("""
-    <div class="hero">
-        <h1>⚙️ Settings & Help</h1>
-        <p>Configure your app and prepare it for real businesses.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("### AI Configuration")
-
-    if get_ai_client():
-        st.success("An AI API key is configured.")
-    else:
-        st.info(
-            "The app is running in demo mode. To enable AI responses, "
-            "configure an API key in Streamlit secrets."
-        )
-
-    st.markdown("### Deployment")
-
-    st.code(
-        "pip install -r requirements.txt\n"
-        "streamlit run app.py",
-        language="bash",
-    )
-
-    st.markdown("### Recommended Next Upgrades")
-
-    st.markdown("""
-    - Permanent database for lead records.
-    - Secure login and separate business accounts.
-    - Real calendar and appointment integrations.
-    - Email or SMS notifications.
-    - Privacy policy and customer-data protection.
-    - Automated testing and error monitoring.
-    - Clear legal disclaimers and professional review.
-    """)
-
-    st.markdown("### Important")
-
-    st.write(
-        "Never put API keys directly into app.py or commit them to "
-        "GitHub. Store secrets in Streamlit Community Cloud settings."
-    )
-
-
-# --------------------------------------------------
-# FOOTER
-# --------------------------------------------------
-
-st.divider()
-
-st.caption(
-    "Universal AI Business Suite | Prototype | "
-    "Verify results before using them for business or legal decisions."
-)
+# ==========================================
+# PAGE 2: THE JUDICIAL CASE ANALYZER
+# ==========================================
+elif app_mode == "⚖️ Judicial Case Analyzer":
+    st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
+    st.write("Paste legal case texts Or testimonies below to instantly generate summaries and judicial breakdowns.")
+    st.divider()
+    case_text = st.text_area("Paste Case Legal Text Here:", height=250)
+    if st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn"):
+        if case_text:
+            with st.spinner("Compiling judicial brief..."):
+                try:
+                    client = OpenAI()
+                    legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
+                    response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
+                    st.success("Analysis Complete!")
+                    st.markdown("### 🏛️ Official AI Case Evaluation Brief")
+                    st.info(response.choices.message.content)
+                except Exception as e: st.error(f"Analysis Error: {e}")
+        else: st.warning("Please paste some legal text first!")
