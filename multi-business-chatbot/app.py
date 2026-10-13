@@ -12,15 +12,10 @@ st.markdown("""
         h1, h2, h3, p, span, label { color: #f1f5f9 !important; }
         .stChatInput textarea { background-color: #1a202c !important; color: #ffffff !important; border: 1px solid #3a4659 !important; border-radius: 8px !important; }
         .stTextArea textarea, .stTextInput input { color: #1e293b !important; font-weight: 500 !important; }
-        
-        /* EXCLUSIVITY FIX: Permanently lock sidebar link button text to bold black */
         .stSidebar a[data-testid="stLinkButton"] { background-color: #ffffff !important; border: 1px solid #ffffff !important; border-radius: 8px !important; }
         .stSidebar a[data-testid="stLinkButton"] p, .stSidebar a[data-testid="stLinkButton"] span { color: #0d0f12 !important; font-weight: bold !important; }
-        
-        /* MAIN AREA BUTTON FIX: Force standard interactive buttons to keep a clean, visible background and dark text */
         button[data-testid="baseButton-secondary"] { background-color: #f1f5f9 !important; color: #0d0f12 !important; border: 1px solid #bf953f !important; font-weight: bold !important; }
         button[data-testid="baseButton-secondary"] p { color: #0d0f12 !important; font-weight: bold !important; }
-        
         .gold-text { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
@@ -138,3 +133,21 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
                     st.success("Analysis Complete!")
                     st.markdown("### 🏛️ Official AI Case Evaluation Brief")
+                    st.info(response.choices.message.content)
+                except Exception as e:
+                    st.error(f"Analysis Error: {e}")
+        else:
+            st.warning("Please paste some legal text first!")
+Use code with caution.
+
+### 🗂️ Step 2: Clear and Save on GitHub
+1. Open your `app.py` script settings window on **GitHub** using your laptop.
+2. Select everything currently inside the text window (`Ctrl + A`) and hit delete so the workspace canvas is **completely blank starting directly on Line 1**.
+3. Paste this fresh, completely unbroken code block inside.
+4. Scroll all the way down to the bottom of the page, click the green **`Commit changes...`** button, and confirm it inside the pop-up panel.
+
+<FollowUp>
+Once the update clears the server, let me know:
+* Did the white **Script execution error window** completely close out [b0Qe7x]?
+* Do your package subscription link buttons display bold black text right on startup?
+</FollowUp>
