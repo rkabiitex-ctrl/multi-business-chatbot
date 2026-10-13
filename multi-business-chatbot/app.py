@@ -12,11 +12,8 @@ st.markdown("""
         h1, h2, h3, p, span, label { color: #f1f5f9 !important; }
         .stChatInput textarea { background-color: #1a202c !important; color: #ffffff !important; border: 1px solid #3a4659 !important; border-radius: 8px !important; }
         .stTextArea textarea, .stTextInput input { color: #1e293b !important; font-weight: 500 !important; }
-        .stSidebar a[data-testid="stLinkButton"] { background-color: #ffffff !important; border: 1px solid #ffffff !important; border-radius: 8px !important; }
-        .stSidebar a[data-testid="stLinkButton"] p, .stSidebar a[data-testid="stLinkButton"] span { color: #0d0f12 !important; font-weight: bold !important; }
-        button[data-testid="baseButton-secondary"] { background-color: #f1f5f9 !important; color: #0d0f12 !important; border: 1px solid #bf953f !important; font-weight: bold !important; }
-        button[data-testid="baseButton-secondary"] p { color: #0d0f12 !important; font-weight: bold !important; }
         .gold-text { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        .gold-link { color: #fcf6ba !important; font-weight: bold !important; text-decoration: underline !important; font-size: 16px !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -29,13 +26,18 @@ st.sidebar.divider()
 # 4. Premium AI Packages in the Left Sidebar
 st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
 st.sidebar.write("Ready to deploy this system onto your real organization website?")
-st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">🔹 Standard Package</p>', unsafe_allow_html=True)
+st.sidebar.divider()
+
+# Standard Package Layout Fix
+st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold; font-size: 16px;">🔹 Standard Package</p>', unsafe_allow_html=True)
 st.sidebar.write("Ideal for Businesses, Clinics, and Stores.")
-st.sidebar.link_button("Get Standard ($300/mo)", "PASTE_YOUR_300_PESAPAL_LINK")
-st.sidebar.write("") 
-st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold;">👑 Elite Judicial & Luxury Package</p>', unsafe_allow_html=True)
+st.sidebar.markdown('<a href="PASTE_YOUR_300_PESAPAL_LINK" target="_blank" class="gold-link">👉 Subscribe Standard ($300/mo)</a>', unsafe_allow_html=True)
+st.sidebar.write("")
+
+# Elite Package Layout Fix
+st.sidebar.markdown('<p style="color: #bf953f !important; font-weight: bold; font-size: 16px;">👑 Elite Judicial & Luxury Package</p>', unsafe_allow_html=True)
 st.sidebar.write("Custom-built for Courts, Law Firms, Yacht Charters, & Developers.")
-st.sidebar.link_button("Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
+st.sidebar.markdown('<a href="PASTE_YOUR_500_PESAPAL_LINK" target="_blank" class="gold-link">👉 Subscribe Elite ($500/mo)</a>', unsafe_allow_html=True)
 st.sidebar.divider()
 
 # ==========================================
@@ -92,17 +94,16 @@ if app_mode == "🤖 AI Lead Booking Agent":
         st.session_state.current_business = business_type
         st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
 
-    if "messages" not in st.session_state or st.sidebar.button("Reset Chat"):
+    if "messages" not in st.session_state or st.sidebar.button("Reset Chat", key="reset_chat_agent"):
         st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
 
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
-            if "audio" in msg: st.audio(msg["audio"], format="audio/mp3")
 
-    user_message = st.chat_input("Or type your message here manually...")
-    if user_message:
-        st.session_state.messages.append({"role": "user", "content": user_message})
+    chat_input = st.chat_input("Or type your message here manually...")
+    if chat_input:
+        st.session_state.messages.append({"role": "user", "content": chat_input})
         try:
             client = OpenAI()
             api_messages = [{"role": "system", "content": system_instruction}]
@@ -111,8 +112,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
                     api_messages.append({"role": m["role"], "content": str(m["content"])})
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
             ai_text = response.choices.message.content
-            audio_response = client.audio.speech.create(model="tts-1", voice="alloy", input=ai_text)
-            st.session_state.messages.append({"role": "assistant", "content": ai_text, "audio": audio_response.content})
+            st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
 
@@ -124,7 +124,9 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
     st.write("Paste legal case texts Or testimonies below to instantly generate summaries and judicial breakdowns.")
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
-    if st.button("🔥 Run AI Judicial Analysis"):
+    
+    # Custom Formatted Button to avoid block glitches
+    if st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn"):
         if case_text:
             with st.spinner("Compiling judicial brief..."):
                 try:
@@ -134,7 +136,6 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     st.success("Analysis Complete!")
                     st.markdown("### 🏛️ Official AI Case Evaluation Brief")
                     st.info(response.choices.message.content)
-                except Exception as e:
-                    st.error(f"Analysis Error: {e}")
-        else:
-            st.warning("Please paste some legal text first!")
+                except Exception as e: st.error(f"Analysis Error: {e}")
+        else: st.warning("Please paste some legal text first!")
+Use code with caution.
