@@ -138,16 +138,3 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     st.error(f"Analysis Error: {e}")
         else:
             st.warning("Please paste some legal text first!")
-Use code with caution.
-
-### 🗂️ Step 2: Clear and Save on GitHub
-1. Open your `app.py` script settings window on **GitHub** using your laptop.
-2. Select everything currently inside the text window (`Ctrl + A`) and hit delete so the workspace canvas is **completely blank starting directly on Line 1**.
-3. Paste this fresh, completely unbroken code block inside.
-4. Scroll all the way down to the bottom of the page, click the green **`Commit changes...`** button, and confirm it inside the pop-up panel.
-
-<FollowUp>
-Once the update clears the server, let me know:
-* Did the white **Script execution error window** completely close out [b0Qe7x]?
-* Do your package subscription link buttons display bold black text right on startup?
-</FollowUp>
