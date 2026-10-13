@@ -13,9 +13,10 @@ st.markdown("""
         .stChatInput textarea { background-color: #1a202c !important; color: #ffffff !important; border: 1px solid #3a4659 !important; border-radius: 8px !important; }
         .stTextArea textarea, .stTextInput input { color: #1e293b !important; font-weight: 500 !important; }
         
-        /* FIX: Forces sidebar action link buttons to display clear dark text on their premium white backgrounds */
+        /* FIX: Deep target Streamlit link button links to force bold black text on white backgrounds */
         .stSidebar p, .stSidebar span, .stSidebar label { color: #f1f5f9 !important; }
-        .stSidebar div[data-testid="stMarkdownContainer"] a { color: #0d0f12 !important; font-weight: bold !important; text-decoration: none !important; }
+        .stSidebar a[data-testid="stLinkButton"] { background-color: #ffffff !important; color: #0d0f12 !important; border-radius: 8px !important; }
+        .stSidebar a[data-testid="stLinkButton"] p { color: #0d0f12 !important; font-weight: bold !important; }
         
         .gold-text { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
     </style>
@@ -23,7 +24,7 @@ st.markdown("""
 
 # 3. Sidebar App Navigation Control Hub
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
-st.sidebar.write("")  # Visual Spacing Pad
+st.sidebar.write("")  
 app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
 st.sidebar.divider()
 
@@ -122,10 +123,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    
-    # FIX: Corrected Title Case grammar formatting for professional compliance
     st.write("Paste legal case texts Or testimonies below to instantly generate summaries and judicial breakdowns.")
-    
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     if st.button("🔥 Run AI Judicial Analysis"):
