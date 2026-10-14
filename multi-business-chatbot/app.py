@@ -13,8 +13,6 @@ st.markdown("""
         .stChatInput textarea { background-color: #1a202c !important; color: #ffffff !important; border: 1px solid #3a4659 !important; border-radius: 8px !important; }
         .stTextArea textarea, .stTextInput input { color: #1e293b !important; font-weight: 500 !important; }
         .gold-text { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
-        
-        /* CLEAN OVERRIDE: Styles text elements inside the sidebar nicely */
         .package-header { color: #bf953f !important; font-weight: bold !important; font-size: 18px !important; margin-bottom: 2px !important; }
         .package-desc { color: #e2e8f0 !important; font-size: 14px !important; margin-bottom: 10px !important; }
     </style>
@@ -31,13 +29,11 @@ st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsaf
 st.sidebar.write("Ready to deploy this system onto your real organization website?")
 st.sidebar.divider()
 
-# Standard Package Layout
 st.sidebar.markdown('<p class="package-header">🔹 Standard Package</p>', unsafe_allow_html=True)
 st.sidebar.markdown('<p class="package-desc">Ideal for Businesses, Clinics, and Stores.</p>', unsafe_allow_html=True)
 st.sidebar.link_button("✨ Get Standard ($300/mo)", "PASTE_YOUR_300_PESAPAL_LINK")
 st.sidebar.write("")
 
-# Elite Package Layout
 st.sidebar.markdown('<p class="package-header">👑 Elite Luxury Package</p>', unsafe_allow_html=True)
 st.sidebar.markdown('<p class="package-desc">Custom-built for Courts, Law Firms, Yacht Charters, & Developers.</p>', unsafe_allow_html=True)
 st.sidebar.link_button("👑 Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
@@ -113,8 +109,11 @@ if app_mode == "🤖 AI Lead Booking Agent":
             for m in st.session_state.messages:
                 if m["role"] in ["user", "assistant"]:
                     api_messages.append({"role": m["role"], "content": str(m["content"])})
+            
+            # PROFESSIONAL FIX: Target response indexing parameters correctly
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-            ai_text = response.choices.message.content
+            ai_text = response.choices[0].message.content
+            
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
@@ -136,6 +135,7 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
                     st.success("Analysis Complete!")
                     st.markdown("### 🏛️ Official AI Case Evaluation Brief")
-                    st.info(response.choices.message.content)
+                    st.info(response.choices[0].message.content)
                 except Exception as e: st.error(f"Analysis Error: {e}")
         else: st.warning("Please paste some legal text first!")
+
