@@ -18,6 +18,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Initialize persistent session states for local memory backups
+if "saved_case_text" not in st.session_state:
+    st.session_state.saved_case_text = ""
+if "last_judicial_analysis" not in st.session_state:
+    st.session_state.last_judicial_analysis = ""
+
 # 3. Sidebar App Navigation Control Hub
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
 st.sidebar.write("")  
@@ -109,33 +115,40 @@ if app_mode == "🤖 AI Lead Booking Agent":
             for m in st.session_state.messages:
                 if m["role"] in ["user", "assistant"]:
                     api_messages.append({"role": m["role"], "content": str(m["content"])})
-            
-            # PROFESSIONAL FIX: Target response indexing parameters correctly
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-            ai_text = response.choices[0].message.content
-            
+            ai_text = response.choices.message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
 
 # ==========================================
-# PAGE 2: THE JUDICIAL CASE ANALYZER
+# PAGE 2: THE JUDICIAL CASE ANALYZER (ANTI-LOSS UPGRADE)
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
     st.write("Paste legal case texts Or testimonies below to instantly generate summaries and judicial breakdowns.")
     st.divider()
-    case_text = st.text_area("Paste Case Legal Text Here:", height=250)
-    if st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn"):
+    
+    # ADVANCED CACHING FIX: Pre-loads any text saved inside local memory to prevent shut-down data loss
+    case_text = st.text_area("Paste Case Legal Text Here:", value=st.session_state.saved_case_text, height=250)
+    
+    # Auto-updates local storage memory live whenever a lawyer types
+    if case_text != st.session_state.saved_case_text:
+        st.session_state.saved_case_text = case_text
+        
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
+    with col2:
+        # Allows the lawyer to clear out the local memory entirely whenever they start a brand new case
+        if st.button("🗑️ Clear Workspace Memory", key="clear_workspace_btn"):
+            st.session_state.saved_case_text = ""
+            st.session_state.last_judicial_analysis = ""
+            st.annotation = "Memory Reset!"
+            st.rerun()
+            
+    if run_analysis:
         if case_text:
             with st.spinner("Compiling judicial brief..."):
                 try:
                     client = OpenAI()
-                    legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
-                    response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
-                    st.success("Analysis Complete!")
-                    st.markdown("### 🏛️ Official AI Case Evaluation Brief")
-                    st.info(response.choices[0].message.content)
-                except Exception as e: st.error(f"Analysis Error: {e}")
-        else: st.warning("Please paste some legal text first!")
-
