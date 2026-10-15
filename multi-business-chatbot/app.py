@@ -151,4 +151,3 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                 try:
                     client = OpenAI()
                     legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
-
