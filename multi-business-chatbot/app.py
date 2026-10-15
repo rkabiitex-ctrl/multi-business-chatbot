@@ -136,15 +136,13 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
     if case_text != st.session_state.saved_case_text:
         st.session_state.saved_case_text = case_text
         
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns(2)
     with col1:
         run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
     with col2:
-        # Allows the lawyer to clear out the local memory entirely whenever they start a brand new case
         if st.button("🗑️ Clear Workspace Memory", key="clear_workspace_btn"):
             st.session_state.saved_case_text = ""
             st.session_state.last_judicial_analysis = ""
-            st.annotation = "Memory Reset!"
             st.rerun()
             
     if run_analysis:
@@ -152,3 +150,5 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
             with st.spinner("Compiling judicial brief..."):
                 try:
                     client = OpenAI()
+                    legal_instruction = "You are a senior judicial counsel. Analyze the text. Break it down into: 1. CORE CASE FACTS, 2. CLAIMS & ARGUMENTS, 3. APPLICABLE LAWS, and 4. SUGGESTED JUDICIAL RECOMMENDATION."
+
