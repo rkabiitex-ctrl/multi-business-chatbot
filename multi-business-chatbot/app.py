@@ -49,20 +49,14 @@ if app_mode == "🤖 AI Lead Booking Agent":
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
     st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
 
-    # FIXED: Re-injected General ChatGPT safely back into the display list array matrix
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:",
         [
-            "Global Dental Clinic Receptionist", 
-            "Elite Med-Spa & Cosmetics Concierge", 
-            "Roofing & Solar Sales Closer", 
-            "Fitness Gym Membership Agent", 
-            "Emergency Plumbing Dispatcher", 
-            "Luxury Exotic Car Rental Agent", 
-            "Custom Luxury Home Builder Consultant", 
-            "Premium Yacht Charter Concierge", 
-            "Auto Parts & Accessories Specialist", 
-            "General ChatGPT AI Workspace"
+            "Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", 
+            "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", 
+            "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", 
+            "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", 
+            "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"
         ]
     )
 
@@ -110,7 +104,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
             ai_text = response.choices.message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
-        except Exception as e: st.error(f"System Error: {e}. Check your OpenAI balance.")
+        except Exception as e: st.error(f"System Error: {e}")
 
 # ==========================================
 # PAGE 2: THE JUDICIAL CASE ANALYZER
@@ -135,7 +129,12 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
             with st.spinner("Compiling judicial brief..."):
                 try:
                     client = OpenAI()
-                    legal_instruction = "You are a senior judicial counsel. Analyze. Break into: 1. CORE FACTS, 2. CLAIMS, 3. APPLICABLE LAWS, 4. SUGGESTED RECOMMENDATION."
+                    legal_instruction = "You are a senior judicial counsel. Analyze. Break into: 1. CORE FACTS, 2. CLAIMS, 3. LAWS, 4. SUGGESTED RECOMMENDATION."
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
                     st.session_state.last_judicial_analysis = response.choices.message.content
                     st.rerun()
+                except Exception as e: st.error(f"Analysis Error: {e}")
+        else: st.warning("Please paste some legal text first!")
+
+    if st.session_state.last_judicial_analysis:
+        st.success("Analysis Securely Loaded from Cache!")
