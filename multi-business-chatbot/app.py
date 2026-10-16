@@ -18,6 +18,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Initialize persistent session states for local memory backups
 if "saved_case_text" not in st.session_state: st.session_state.saved_case_text = ""
 if "last_judicial_analysis" not in st.session_state: st.session_state.last_judicial_analysis = ""
 
@@ -49,14 +50,20 @@ if app_mode == "🤖 AI Lead Booking Agent":
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
     st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
 
+    # Core List Core Array Matrix Hub
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:",
         [
-            "Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", 
-            "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", 
-            "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", 
-            "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", 
-            "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"
+            "Global Dental Clinic Receptionist", 
+            "Elite Med-Spa & Cosmetics Concierge", 
+            "Roofing & Solar Sales Closer", 
+            "Fitness Gym Membership Agent", 
+            "Emergency Plumbing Dispatcher", 
+            "Luxury Exotic Car Rental Agent", 
+            "Custom Luxury Home Builder Consultant", 
+            "Premium Yacht Charter Concierge", 
+            "Auto Parts & Accessories Specialist", 
+            "General ChatGPT AI Workspace"
         ]
     )
 
@@ -81,9 +88,10 @@ if app_mode == "🤖 AI Lead Booking Agent":
     elif business_type == "General ChatGPT AI Workspace":
         system_instruction, welcome_message = "You are ChatGPT, a highly helpful, intelligent AI assistant. Provide pure value. Do NOT ask for booking details.", "Welcome to your General ChatGPT AI Workspace! 🚀 Ask me anything!"
 
-    if "current_business" not in st.session_state: st.session_state.current_business = business_type
-    if st.session_state.current_business != business_type:
-        st.session_state.current_business = business_type
+    # FORCED KEY REBOOT FIX: Tricks Streamlit into dumping its broken history cache track variables
+    if "active_business_profile" not in st.session_state: st.session_state.active_business_profile = business_type
+    if st.session_state.active_business_profile != business_type:
+        st.session_state.active_business_profile = business_type
         st.session_state.messages = [{"role": "assistant", "content": welcome_message}]
 
     if "messages" not in st.session_state or st.sidebar.button("Reset Chat", key="reset_chat_agent"):
@@ -131,10 +139,3 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     client = OpenAI()
                     legal_instruction = "You are a senior judicial counsel. Analyze. Break into: 1. CORE FACTS, 2. CLAIMS, 3. LAWS, 4. SUGGESTED RECOMMENDATION."
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
-                    st.session_state.last_judicial_analysis = response.choices.message.content
-                    st.rerun()
-                except Exception as e: st.error(f"Analysis Error: {e}")
-        else: st.warning("Please paste some legal text first!")
-
-    if st.session_state.last_judicial_analysis:
-        st.success("Analysis Securely Loaded from Cache!")
