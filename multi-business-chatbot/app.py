@@ -1,4 +1,4 @@
-mport streamlit as st
+import streamlit as st
 from openai import OpenAI
 
 # 1. Setup the Web Page Layout & Tab Title
