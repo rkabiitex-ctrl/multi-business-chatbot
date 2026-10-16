@@ -1,4 +1,4 @@
-import streamlit as st
+mport streamlit as st
 from openai import OpenAI
 
 # 1. Setup the Web Page Layout & Tab Title
@@ -18,7 +18,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize persistent session states for local memory backups
 if "saved_case_text" not in st.session_state: st.session_state.saved_case_text = ""
 if "last_judicial_analysis" not in st.session_state: st.session_state.last_judicial_analysis = ""
 
@@ -50,20 +49,14 @@ if app_mode == "🤖 AI Lead Booking Agent":
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
     st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
 
-    # DEFINITIVE CACHE FIX: Uses an explicitly unique key definition to instantly override frozen server dropdown components
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:",
         [
-            "Global Dental Clinic Receptionist", 
-            "Elite Med-Spa & Cosmetics Concierge", 
-            "Roofing & Solar Sales Closer", 
-            "Fitness Gym Membership Agent", 
-            "Emergency Plumbing Dispatcher", 
-            "Luxury Exotic Car Rental Agent", 
-            "Custom Luxury Home Builder Consultant", 
-            "Premium Yacht Charter Concierge", 
-            "Auto Parts & Accessories Specialist", 
-            "General ChatGPT AI Workspace"
+            "Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", 
+            "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", 
+            "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", 
+            "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", 
+            "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"
         ],
         key="master_business_selector_v3"
     )
@@ -109,7 +102,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
             for m in st.session_state.messages:
                 if m["role"] in ["user", "assistant"]: api_messages.append({"role": m["role"], "content": str(m["content"])})
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-            ai_text = response.choices.message.content
+            ai_text = response.choices[0].message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}")
@@ -139,7 +132,9 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     client = OpenAI()
                     legal_instruction = "You are senior judicial counsel. Break into: 1. CORE FACTS, 2. CLAIMS, 3. LAWS, 4. RECOMMENDATION."
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
-                    st.session_state.last_judicial_analysis = response.choices.message.content
+                    
+                    # PROFESSIONAL ENVELOPE FIX: Corrected indexing to choices[0] for the Judicial page
+                    st.session_state.last_judicial_analysis = response.choices[0].message.content
                     st.rerun()
                 except Exception as e: st.error(f"Analysis Error: {e}")
         else: st.warning("Please paste some legal text first!")
