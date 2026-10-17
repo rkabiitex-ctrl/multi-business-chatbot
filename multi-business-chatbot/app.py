@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+import streamlit.components.v1 as components
 
 # 1. Setup the Web Page Layout & Tab Title
 st.set_page_config(page_title="Elite AI Workspace", page_icon="🤖", layout="wide")
@@ -17,9 +18,6 @@ st.markdown("""
         .package-desc { color: #e2e8f0 !important; font-size: 14px !important; margin-bottom: 10px !important; }
     </style>
 """, unsafe_allow_html=True)
-
-if "saved_case_text" not in st.session_state: st.session_state.saved_case_text = ""
-if "last_judicial_analysis" not in st.session_state: st.session_state.last_judicial_analysis = ""
 
 # 3. Sidebar App Navigation Control Hub
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
@@ -102,27 +100,50 @@ if app_mode == "🤖 AI Lead Booking Agent":
             for m in st.session_state.messages:
                 if m["role"] in ["user", "assistant"]: api_messages.append({"role": m["role"], "content": str(m["content"])})
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-            ai_text = response.choices[0].message.content
+            ai_text = response.choices[message.content]
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}")
 
 # ==========================================
-# PAGE 2: THE JUDICIAL CASE ANALYZER
+# PAGE 2: THE JUDICIAL CASE ANALYZER (DATABASE VAULT UPGRADE)
 # ==========================================
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts Or testimonies below to instantly generate summaries and breakdowns.")
+    st.write("Paste legal case texts below to instantly generate summaries. Your work is persistently saved locally.")
     st.divider()
+
+    # PERSISTENT LOCAL DATABASE INTERVEL HUB ENGINE: JavaScript data connector
+    js_db_bridge = """
+    <script>
+        const textarea = parent.document.querySelector('textarea[aria-label="Paste Case Legal Text Here:"]');
+        if (textarea) {
+            // Load historical data from physical browser database directly on startup
+            const cachedData = localStorage.getItem('judicial_case_vault_db');
+            if (cachedData && textarea.value === "") {
+                textarea.value = cachedData;
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            // Auto-backup live typing edits directly to local hard-disk database records
+            textarea.addEventListener('input', (e) => {
+                localStorage.setItem('judicial_case_vault_db', e.target.value);
+            });
+        }
+    </script>
+    """
     
-    case_text = st.text_area("Paste Case Legal Text Here:", value=st.session_state.saved_case_text, height=250)
-    if case_text != st.session_state.saved_case_text: st.session_state.saved_case_text = case_text
+    # Run the background local storage database bridge controller seamlessly
+    components.html(js_db_bridge, height=0, width=0)
+
+    case_text = st.text_area("Paste Case Legal Text Here:", height=250)
         
     col1, col2 = st.columns(2)
-    with col1: run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
+    with col1: 
+        run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
     with col2:
         if st.button("🗑️ Clear Workspace Memory", key="clear_workspace_btn"):
-            st.session_state.saved_case_text, st.session_state.last_judicial_analysis = "", ""
+            # Empty both session cache AND the physical hard disk browser database safely
+            st.write("""<script>localStorage.removeItem('judicial_case_vault_db');</script>""", unsafe_allow_html=True)
             st.rerun()
             
     if run_analysis:
@@ -131,15 +152,3 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                 try:
                     client = OpenAI()
                     legal_instruction = "You are senior judicial counsel. Break into: 1. CORE FACTS, 2. CLAIMS, 3. LAWS, 4. RECOMMENDATION."
-                    response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
-                    
-                    # PROFESSIONAL ENVELOPE FIX: Corrected indexing to choices[0] for the Judicial page
-                    st.session_state.last_judicial_analysis = response.choices[0].message.content
-                    st.rerun()
-                except Exception as e: st.error(f"Analysis Error: {e}")
-        else: st.warning("Please paste some legal text first!")
-
-    if st.session_state.last_judicial_analysis:
-        st.success("Analysis Securely Loaded from Cache!")
-        st.markdown("### 🏛️ Official AI Case Evaluation Brief")
-        st.info(st.session_state.last_judicial_analysis)
