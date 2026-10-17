@@ -1,9 +1,10 @@
 import streamlit as st
 from openai import OpenAI
-import streamlit.components.v1 as components
 
+# 1. Setup the Web Page Layout & Tab Title
 st.set_page_config(page_title="Elite AI Workspace", page_icon="🤖", layout="wide")
 
+# 2. Inject Custom Elite CSS Styling for Premium Themes
 st.markdown("""
     <style>
         .stApp { background-color: #0d0f12 !important; color: #e2e8f0 !important; }
@@ -17,12 +18,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-if "saved_analysis_cache" not in st.session_state: st.session_state.saved_analysis_cache = ""
+# NATIVE MEMORY ENGINES: Initializes bulletproof local memory caching inside Streamlit
+if "local_case_vault_text" not in st.session_state: st.session_state.local_case_vault_text = ""
+if "local_case_vault_brief" not in st.session_state: st.session_state.local_case_vault_brief = ""
 
+# 3. Sidebar App Navigation Control Hub
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
 app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
 st.sidebar.divider()
 
+# 4. Premium AI Packages in the Left Sidebar
 st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
 st.sidebar.write("Ready to deploy this system onto your real organization website?")
 st.sidebar.divider()
@@ -81,42 +86,28 @@ if app_mode == "🤖 AI Lead Booking Agent":
             for m in st.session_state.messages:
                 if m["role"] in ["user", "assistant"]: api_messages.append({"role": m["role"], "content": str(m["content"])})
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-            ai_text = response.choices[0].message.content
+            ai_text = response.choices.message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}")
 
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts below. Everything is persistently saved inside your browser database.")
+    st.write("Paste legal case texts below. Your text and generated briefs remain locked in workspace memory.")
     st.divider()
-
-    js_db_bridge = """
-    <script>
-        setTimeout(() => {
-            const textarea = parent.document.querySelector('textarea[aria-label="Paste Case Legal Text Here:"]');
-            if (textarea) {
-                const cachedText = localStorage.getItem('judicial_case_vault_text');
-                if (cachedText && textarea.value === "") {
-                    textarea.value = cachedText;
-                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                }
-                textarea.addEventListener('input', (e) => {
-                    localStorage.setItem('judicial_case_vault_text', e.target.value);
-                });
-            }
-        }, 500);
-    </script>
-    """
-    components.html(js_db_bridge, height=0, width=0)
-
-    case_text = st.text_area("Paste Case Legal Text Here:", height=250)
+    
+    # STABLE DATA LINK: Binds the text field straight to Streamlit's native memory core
+    case_text = st.text_area("Paste Case Legal Text Here:", value=st.session_state.local_case_vault_text, height=250)
+    if case_text != st.session_state.local_case_vault_text:
+        st.session_state.local_case_vault_text = case_text
+        
     col1, col2 = st.columns(2)
-    with col1: run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
+    with col1: 
+        run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
     with col2:
         if st.button("🗑️ Clear Workspace Memory", key="clear_workspace_btn"):
-            st.markdown("<script>localStorage.removeItem('judicial_case_vault_text'); localStorage.removeItem('judicial_case_vault_brief');</script>", unsafe_allow_html=True)
-            st.session_state.saved_analysis_cache = ""
+            st.session_state.local_case_vault_text = ""
+            st.session_state.local_case_vault_brief = ""
             st.rerun()
             
     if run_analysis:
@@ -126,17 +117,14 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     client = OpenAI()
                     legal_instruction = "You are senior judicial counsel. Break into: 1. CORE FACTS, 2. CLAIMS, 3. LAWS, 4. RECOMMENDATION."
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
-                    brief_output = response.choices[0].message.content
-                    st.session_state.saved_analysis_cache = brief_output
-                    st.markdown(f"""<script>localStorage.setItem('judicial_case_vault_brief', {repr(brief_output)});</script>""", unsafe_allow_html=True)
+                    st.session_state.local_case_vault_brief = response.choices.message.content
                     st.rerun()
-                except Exception as e: st.error(f"Analysis Error: {e}")
-        else: st.warning("Please paste some legal text first!")
-
-    if not st.session_state.saved_analysis_cache:
-        st.markdown("""
-        <script>
-            const brief = localStorage.getItem('judicial_case_vault_brief');
-            if (brief) { window.parent.postMessage({type: 'LOAD_BRIEF', value: brief}, '*'); }
-        </script>
-        """, unsafe_allow_html=True)
+                except Exception as e: 
+                    st.error(f"Analysis Error: {e}")
+        else: 
+            st.warning("Please paste some legal text first!")
+        
+    if st.session_state.local_case_vault_brief:
+        st.success("Analysis Securely Loaded from Workspace Memory!")
+        st.markdown("### 🏛️ Official AI Case Evaluation Brief")
+        st.info(st.session_state.local_case_vault_brief)
