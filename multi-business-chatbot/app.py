@@ -20,19 +20,16 @@ st.markdown("""
 if "saved_analysis_cache" not in st.session_state: st.session_state.saved_analysis_cache = ""
 
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
-st.sidebar.write("")  
 app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
 st.sidebar.divider()
 
 st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
 st.sidebar.write("Ready to deploy this system onto your real organization website?")
 st.sidebar.divider()
-
 st.sidebar.markdown('<p class="package-header">🔹 Standard Package</p>', unsafe_allow_html=True)
 st.sidebar.markdown('<p class="package-desc">Ideal for Businesses, Clinics, and Stores.</p>', unsafe_allow_html=True)
 st.sidebar.link_button("✨ Get Standard ($300/mo)", "PASTE_YOUR_300_PESAPAL_LINK")
 st.sidebar.write("")
-
 st.sidebar.markdown('<p class="package-header">👑 Elite Luxury Package</p>', unsafe_allow_html=True)
 st.sidebar.markdown('<p class="package-desc">Custom-built for Courts, Law Firms, Yacht Charters, & Developers.</p>', unsafe_allow_html=True)
 st.sidebar.link_button("👑 Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
@@ -41,12 +38,7 @@ st.sidebar.divider()
 if app_mode == "🤖 AI Lead Booking Agent":
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
     st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
-
-    business_type = st.selectbox(
-        "Choose an AI Agent Profile to Demo:",
-        ["Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"],
-        key="master_business_selector_v3"
-    )
+    business_type = st.selectbox("Choose an AI Agent Profile to Demo:", ["Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"], key="master_business_selector_v3")
 
     if business_type == "Global Dental Clinic Receptionist":
         sys_inst, welcome_msg = "You are a receptionist for a dental clinic. Get their phone to book.", "Hello! Thanks for visiting our dental page today. Looking to book a cleaning?"
@@ -59,7 +51,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
     elif business_type == "Emergency Plumbing Dispatcher":
         sys_inst, welcome_msg = "You are a plumbing dispatcher. Get phone and emergency details.", "Express Plumbing here! Do you have an active leak or emergency right now?"
     elif business_type == "Luxury Exotic Car Rental Agent":
-        sys_inst, welcome_msg = "You are an elite supercar concierge. Find vehicle, dates, and contact info.", "Welcome to our luxury fleet concierge. Looking to secure an exotic rental?"
+        sys_inst, welcome_msg = "You are a supercar concierge. Find vehicle, dates, and contact info.", "Welcome to our luxury fleet concierge. Looking to secure an exotic rental?"
     elif business_type == "Custom Luxury Home Builder Consultant":
         sys_inst, welcome_msg = "You are a design consultant. Discover budget, location, and get phone.", "Welcome to our custom estate design portal. Looking to build on your own lot?"
     elif business_type == "Premium Yacht Charter Concierge":
@@ -89,17 +81,16 @@ if app_mode == "🤖 AI Lead Booking Agent":
             for m in st.session_state.messages:
                 if m["role"] in ["user", "assistant"]: api_messages.append({"role": m["role"], "content": str(m["content"])})
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-            ai_text = response.choices.message.content
+            ai_text = response.choices[0].message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}")
 
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts below. Your text and generated briefs are persistently saved in your browser cache.")
+    st.write("Paste legal case texts below. Everything is persistently saved inside your browser database.")
     st.divider()
 
-    # ULTIMATE DUAL CACHE RESILIENCE BRIDGE: JavaScript database connector
     js_db_bridge = """
     <script>
         setTimeout(() => {
@@ -119,16 +110,6 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
     """
     components.html(js_db_bridge, height=0, width=0)
 
-    # Hydrate brief session storage state from physical localStorage database records if present
-    load_brief_js = """
-    <script>
-        const cachedBrief = localStorage.getItem('judicial_case_vault_brief');
-        if (cachedBrief) {
-            window.parent.postMessage({type: 'LOAD_BRIEF', value: cachedBrief}, '*');
-        }
-    </script>
-    """
-    
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     col1, col2 = st.columns(2)
     with col1: run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
@@ -147,5 +128,15 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
                     brief_output = response.choices[0].message.content
                     st.session_state.saved_analysis_cache = brief_output
-                    
-                    # Lock the generated text brief straight into physical local hard drive storage
+                    st.markdown(f"""<script>localStorage.setItem('judicial_case_vault_brief', {repr(brief_output)});</script>""", unsafe_allow_html=True)
+                    st.rerun()
+                except Exception as e: st.error(f"Analysis Error: {e}")
+        else: st.warning("Please paste some legal text first!")
+
+    if not st.session_state.saved_analysis_cache:
+        st.markdown("""
+        <script>
+            const brief = localStorage.getItem('judicial_case_vault_brief');
+            if (brief) { window.parent.postMessage({type: 'LOAD_BRIEF', value: brief}, '*'); }
+        </script>
+        """, unsafe_allow_html=True)
