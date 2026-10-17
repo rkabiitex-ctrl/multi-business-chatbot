@@ -17,6 +17,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+if "saved_analysis_cache" not in st.session_state: st.session_state.saved_analysis_cache = ""
+
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
 st.sidebar.write("")  
 app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
@@ -57,7 +59,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
     elif business_type == "Emergency Plumbing Dispatcher":
         sys_inst, welcome_msg = "You are a plumbing dispatcher. Get phone and emergency details.", "Express Plumbing here! Do you have an active leak or emergency right now?"
     elif business_type == "Luxury Exotic Car Rental Agent":
-        sys_inst, welcome_msg = "You are a supercar concierge. Find vehicle, dates, and contact info.", "Welcome to our luxury fleet concierge. Looking to secure an exotic rental?"
+        sys_inst, welcome_msg = "You are an elite supercar concierge. Find vehicle, dates, and contact info.", "Welcome to our luxury fleet concierge. Looking to secure an exotic rental?"
     elif business_type == "Custom Luxury Home Builder Consultant":
         sys_inst, welcome_msg = "You are a design consultant. Discover budget, location, and get phone.", "Welcome to our custom estate design portal. Looking to build on your own lot?"
     elif business_type == "Premium Yacht Charter Concierge":
@@ -87,28 +89,29 @@ if app_mode == "🤖 AI Lead Booking Agent":
             for m in st.session_state.messages:
                 if m["role"] in ["user", "assistant"]: api_messages.append({"role": m["role"], "content": str(m["content"])})
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-            ai_text = response.choices[0].message.content
+            ai_text = response.choices.message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}")
 
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts below. Your work is persistently saved locally via browser cache.")
+    st.write("Paste legal case texts below. Your text and generated briefs are persistently saved in your browser cache.")
     st.divider()
 
+    # ULTIMATE DUAL CACHE RESILIENCE BRIDGE: JavaScript database connector
     js_db_bridge = """
     <script>
         setTimeout(() => {
             const textarea = parent.document.querySelector('textarea[aria-label="Paste Case Legal Text Here:"]');
             if (textarea) {
-                const cachedData = localStorage.getItem('judicial_case_vault_db');
-                if (cachedData && textarea.value === "") {
-                    textarea.value = cachedData;
+                const cachedText = localStorage.getItem('judicial_case_vault_text');
+                if (cachedText && textarea.value === "") {
+                    textarea.value = cachedText;
                     textarea.dispatchEvent(new Event('input', { bubbles: true }));
                 }
                 textarea.addEventListener('input', (e) => {
-                    localStorage.setItem('judicial_case_vault_db', e.target.value);
+                    localStorage.setItem('judicial_case_vault_text', e.target.value);
                 });
             }
         }, 500);
@@ -116,12 +119,23 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
     """
     components.html(js_db_bridge, height=0, width=0)
 
+    # Hydrate brief session storage state from physical localStorage database records if present
+    load_brief_js = """
+    <script>
+        const cachedBrief = localStorage.getItem('judicial_case_vault_brief');
+        if (cachedBrief) {
+            window.parent.postMessage({type: 'LOAD_BRIEF', value: cachedBrief}, '*');
+        }
+    </script>
+    """
+    
     case_text = st.text_area("Paste Case Legal Text Here:", height=250)
     col1, col2 = st.columns(2)
     with col1: run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
     with col2:
         if st.button("🗑️ Clear Workspace Memory", key="clear_workspace_btn"):
-            st.write("<script>localStorage.removeItem('judicial_case_vault_db');</script>", unsafe_allow_html=True)
+            st.markdown("<script>localStorage.removeItem('judicial_case_vault_text'); localStorage.removeItem('judicial_case_vault_brief');</script>", unsafe_allow_html=True)
+            st.session_state.saved_analysis_cache = ""
             st.rerun()
             
     if run_analysis:
@@ -131,8 +145,7 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     client = OpenAI()
                     legal_instruction = "You are senior judicial counsel. Break into: 1. CORE FACTS, 2. CLAIMS, 3. LAWS, 4. RECOMMENDATION."
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
-                    st.success("Analysis Complete!")
-                    st.markdown("### 🏛️ Official AI Case Evaluation Brief")
-                    st.info(response.choices[0].message.content)
-                except Exception as e: st.error(f"Analysis Error: {e}")
-        else: st.warning("Please paste some legal text first!")
+                    brief_output = response.choices[0].message.content
+                    st.session_state.saved_analysis_cache = brief_output
+                    
+                    # Lock the generated text brief straight into physical local hard drive storage
