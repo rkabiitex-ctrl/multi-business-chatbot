@@ -1,10 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 
-# 1. Setup the Web Page Layout & Tab Title
 st.set_page_config(page_title="Elite AI Workspace", page_icon="🤖", layout="wide")
 
-# 2. Inject Custom Elite CSS Styling for Premium Themes
 st.markdown("""
     <style>
         .stApp { background-color: #0d0f12 !important; color: #e2e8f0 !important; }
@@ -18,16 +16,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# NATIVE MEMORY ENGINES: Initializes bulletproof local memory caching inside Streamlit
 if "local_case_vault_text" not in st.session_state: st.session_state.local_case_vault_text = ""
 if "local_case_vault_brief" not in st.session_state: st.session_state.local_case_vault_brief = ""
 
-# 3. Sidebar App Navigation Control Hub
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
 app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
 st.sidebar.divider()
 
-# 4. Premium AI Packages in the Left Sidebar
 st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
 st.sidebar.write("Ready to deploy this system onto your real organization website?")
 st.sidebar.divider()
@@ -48,7 +43,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
     if business_type == "Global Dental Clinic Receptionist":
         sys_inst, welcome_msg = "You are a receptionist for a dental clinic. Get their phone to book.", "Hello! Thanks for visiting our dental page today. Looking to book a cleaning?"
     elif business_type == "Elite Med-Spa & Cosmetics Concierge":
-        sys_inst, welcome_msg = "You are an elite booking concierge for a premium medical spa. Ask for phone or WhatsApp to book.", "Welcome to our premier aesthetics concierge. ✨ Looking to explore skin treatments today?"
+        sys_inst, welcome_msg = "You are an elite booking concierge for a medical spa. Ask for phone or WhatsApp to book.", "Welcome to our premier aesthetics concierge. ✨ Looking to explore skin treatments today?"
     elif business_type == "Roofing & Solar Sales Closer":
         sys_inst, welcome_msg = "You are a roofing sales assistant. Get address and phone for inspection.", "Hi there! Welcome to our roofing page. Need a free estimate?"
     elif business_type == "Fitness Gym Membership Agent":
@@ -86,24 +81,22 @@ if app_mode == "🤖 AI Lead Booking Agent":
             for m in st.session_state.messages:
                 if m["role"] in ["user", "assistant"]: api_messages.append({"role": m["role"], "content": str(m["content"])})
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
-            ai_text = response.choices.message.content
+            ai_text = response.choices[0].message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
         except Exception as e: st.error(f"System Error: {e}")
 
 elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
-    st.write("Paste legal case texts below. Your text and generated briefs remain locked in workspace memory.")
+    st.write("Paste legal case texts below. Your text and briefs remain locked securely in runtime memory arrays.")
     st.divider()
     
-    # STABLE DATA LINK: Binds the text field straight to Streamlit's native memory core
     case_text = st.text_area("Paste Case Legal Text Here:", value=st.session_state.local_case_vault_text, height=250)
     if case_text != st.session_state.local_case_vault_text:
         st.session_state.local_case_vault_text = case_text
         
     col1, col2 = st.columns(2)
-    with col1: 
-        run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
+    with col1: run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
     with col2:
         if st.button("🗑️ Clear Workspace Memory", key="clear_workspace_btn"):
             st.session_state.local_case_vault_text = ""
@@ -117,12 +110,10 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
                     client = OpenAI()
                     legal_instruction = "You are senior judicial counsel. Break into: 1. CORE FACTS, 2. CLAIMS, 3. LAWS, 4. RECOMMENDATION."
                     response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "system", "content": legal_instruction}, {"role": "user", "content": case_text}])
-                    st.session_state.local_case_vault_brief = response.choices.message.content
+                    st.session_state.local_case_vault_brief = response.choices[0].message.content
                     st.rerun()
-                except Exception as e: 
-                    st.error(f"Analysis Error: {e}")
-        else: 
-            st.warning("Please paste some legal text first!")
+                except Exception as e: st.error(f"Analysis Error: {e}")
+        else: st.warning("Please paste some legal text first!")
         
     if st.session_state.local_case_vault_brief:
         st.success("Analysis Securely Loaded from Workspace Memory!")
