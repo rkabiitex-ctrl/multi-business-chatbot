@@ -61,24 +61,24 @@ def extract_and_log_lead(user_text, business_profile):
 # ==========================================
 # 3. SIDEBAR NAVIGATION CONFIGURATIONS
 # ==========================================
-st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
+st.sidebar.markdown('<h2 class="gold-text">Workspace Navigation</h2>', unsafe_allow_html=True)
 
-# FIXED: Emojis strictly mapped to match what is visible on your screen screenshot layout
-app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer", "🏗️ BuildMost Sourcing Hub"])
+# FIXED: Removed all emoji characters completely to prevent system font rendering decoding bugs
+app_mode = st.sidebar.radio("Go to Page:", ["AI Lead Booking Agent", "Judicial Case Analyzer", "BuildMost Sourcing Hub"])
 st.sidebar.divider()
 
-st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
+st.sidebar.markdown('<h3 class="gold-text">Premium AI Packages</h3>', unsafe_allow_html=True)
 st.sidebar.write("Ready to deploy this system onto your real organization website?")
 st.sidebar.divider()
 
-st.sidebar.markdown('<p class="package-header">🔹 Standard Package</p>', unsafe_allow_html=True)
+st.sidebar.markdown('<p class="package-header">Standard Package</p>', unsafe_allow_html=True)
 st.sidebar.markdown('<p class="package-desc">Ideal for Businesses, Clinics, and Stores.</p>', unsafe_allow_html=True)
-st.sidebar.link_button("✨ Get Standard ($300/mo)", "PASTE_YOUR_300_PESAPAL_LINK")
+st.sidebar.link_button("Get Standard ($300/mo)", "PASTE_YOUR_300_PESAPAL_LINK")
 
 st.sidebar.write("")
-st.sidebar.markdown('<p class="package-header">👑 Elite Luxury Package</p>', unsafe_allow_html=True)
+st.sidebar.markdown('<p class="package-header">Elite Luxury Package</p>', unsafe_allow_html=True)
 st.sidebar.markdown('<p class="package-desc">Custom-built for Courts, Law Firms, Yacht Charters, & Developers.</p>', unsafe_allow_html=True)
-st.sidebar.link_button("👑 Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
+st.sidebar.link_button("Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK")
 st.sidebar.divider()
 
 # Profile Instruction Configurations
@@ -94,7 +94,7 @@ PROFILE_RULES = {
 # 4. MODULAR PAGE RENDER CHANNELS
 # ==========================================
 def render_lead_booking_agent():
-    st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="gold-text">Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
     st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
     
     business_type = st.selectbox("Choose an AI Agent Profile to Demo:", list(PROFILE_RULES.keys()), key="master_business_selector_v3")
@@ -114,7 +114,7 @@ def render_lead_booking_agent():
         st.session_state.lead_extraction_status = "unverified"
 
     if st.session_state.lead_extraction_status == "VERIFIED":
-        st.success("🚨 TARGET CONTACT INFO SUCCESSFULLY CAPTURED & EXECUTED ON THE BACKEND")
+        st.success("TARGET CONTACT INFO SUCCESSFULLY CAPTURED & EXECUTED ON THE BACKEND")
 
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]): st.write(msg["content"])
@@ -135,7 +135,7 @@ def render_lead_booking_agent():
         except Exception as e: st.error(f"System Error: {e}")
 
 def render_judicial_analyzer():
-    st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="gold-text">Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
     st.write("Paste legal case texts below. Your text and briefs remain locked securely in runtime memory arrays.")
     st.divider()
     case_text = st.text_area("Paste Case Legal Text Here:", value=st.session_state.local_case_vault_text, height=250)
@@ -144,9 +144,9 @@ def render_judicial_analyzer():
         st.session_state.local_case_vault_text = case_text
         
     col1, col2 = st.columns(2)
-    with col1: run_analysis = st.button("🔥 Run AI Judicial Analysis", key="judicial_analysis_btn")
+    with col1: run_analysis = st.button("Run AI Judicial Analysis", key="judicial_analysis_btn")
     with col2:
-        if st.button("🗑️ Clear Workspace Memory", key="clear_workspace_btn"):
+        if st.button("Clear Workspace Memory", key="clear_workspace_btn"):
             st.session_state.local_case_vault_text = ""
             st.session_state.local_case_vault_brief = ""
             st.rerun()
