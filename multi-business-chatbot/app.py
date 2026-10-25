@@ -59,8 +59,6 @@ def extract_and_log_lead(user_text, business_profile):
 # 3. SIDEBAR NAVIGATION & PACKAGES
 # ==========================================
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
-
-# Emojis updated here to perfectly match what your sidebar menu layout rendered
 app_mode = st.sidebar.radio("Go to Page:", ["🧠 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
 st.sidebar.divider()
 
@@ -79,38 +77,35 @@ st.sidebar.link_button("👑 Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK"
 st.sidebar.divider()
 
 # ==========================================
-# 4. MODULAR RENDERING INTERFACES
+# 4. DATA MATRIX CONFIGURATIONS
 # ==========================================
-def render_lead_booking_agent():
+PROFILE_RULES = {
+    "Global Dental Clinic Receptionist": ("You are a receptionist for a dental clinic. Systematically ask for their phone number or contact info to secure an urgent treatment slot tomorrow.", "Hello! Thanks for visiting our dental page today. Looking to book an urgent cleaning or checkup tomorrow?"),
+    "Elite Med-Spa & Cosmetics Concierge": ("You are an elite booking concierge for a medical spa. Secure their phone number or WhatsApp to reserve aesthetics services.", "Welcome to our premier aesthetics concierge. ✨ Looking to explore skin treatments today?"),
+    "Roofing & Solar Sales Closer": ("You are an expert roofing sales assistant. Convince the customer an inspector needs to visit, then gather their address and phone number.", "Hi there! Welcome to our roofing services portal. Experiencing leaks or looking for a free architectural estimate?"),
+    "Fitness Gym Membership Agent": ("You are a high-energy gym assistant. Get their email or phone number to drop a free day pass to their mobile device.", "Let's go! Welcome to the fitness hub. Ready to crush your wellness goals? What's your email to get your free pass?"),
+    "Emergency Plumbing Dispatcher": ("You are an emergency plumbing dispatcher. Instantly secure their primary contact number to send out an on-call team.", "Express Plumbing here! Do you have an active leak, burst pipe, or emergency right now?"),
+    "Luxury Exotic Car Rental Agent": ("You are a supercar rental coordinator. Find out their target vehicle class and secure contact info to send verification requirements.", "Welcome to our luxury fleet concierge. Looking to secure an exotic rental confirmation for tomorrow?"),
+    "Custom Luxury Home Builder Consultant": ("You are an upscale design consultant. Uncover their budget tier, geographical market, and secure a callback line.", "Welcome to our custom estate design portal. Looking to build or remodel a luxury property on your lot?"),
+    "Premium Yacht Charter Concierge": ("You are a private maritime cruise concierge. Get destination layout details, guest numbers, dates, and clear contact numbers.", "Welcome to our premium charter concierge. Planning a private coastal excursion or yacht gathering?"),
+    "Auto Parts & Accessories Specialist": ("You are a parts desk specialist. Secure vehicle specs (year, make, model) along with phone numbers for fulfillment tracking.", "Auto parts specialist here! What vehicle year, make, and model are we sourcing components for today?"),
+    "General ChatGPT AI Workspace": ("You are ChatGPT, a highly helpful assistant. Provide extreme value.", "Welcome to your General ChatGPT AI Workspace! 🚀 Ask me anything!")
+}
+
+# ==========================================
+# 5. RENDER CHANNELS
+# ==========================================
+if app_mode == "🧠 AI Lead Booking Agent":
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
     st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
     
     business_type = st.selectbox(
         "Choose an AI Agent Profile to Demo:", 
-        [
-            "Global Dental Clinic Receptionist", "Elite Med-Spa & Cosmetics Concierge", 
-            "Roofing & Solar Sales Closer", "Fitness Gym Membership Agent", 
-            "Emergency Plumbing Dispatcher", "Luxury Exotic Car Rental Agent", 
-            "Custom Luxury Home Builder Consultant", "Premium Yacht Charter Concierge", 
-            "Auto Parts & Accessories Specialist", "General ChatGPT AI Workspace"
-        ], 
+        list(PROFILE_RULES.keys()),
         key="master_business_selector_v3"
     )
 
-    profile_rules = {
-        "Global Dental Clinic Receptionist": ("You are a receptionist for a dental clinic. Systematically ask for their phone number or contact info to secure an urgent treatment slot tomorrow.", "Hello! Thanks for visiting our dental page today. Looking to book an urgent cleaning or checkup tomorrow?"),
-        "Elite Med-Spa & Cosmetics Concierge": ("You are an elite booking concierge for a medical spa. Secure their phone number or WhatsApp to reserve aesthetics services.", "Welcome to our premier aesthetics concierge. ✨ Looking to explore skin treatments today?"),
-        "Roofing & Solar Sales Closer": ("You are an expert roofing sales assistant. Convince the customer an inspector needs to visit, then gather their address and phone number.", "Hi there! Welcome to our roofing services portal. Experiencing leaks or looking for a free architectural estimate?"),
-        "Fitness Gym Membership Agent": ("You are a high-energy gym assistant. Get their email or phone number to drop a free day pass to their mobile device.", "Let's go! Welcome to the fitness hub. Ready to crush your wellness goals? What's your email to get your free pass?"),
-        "Emergency Plumbing Dispatcher": ("You are an emergency plumbing dispatcher. Instantly secure their primary contact number to send out an on-call team.", "Express Plumbing here! Do you have an active leak, burst pipe, or emergency right now?"),
-        "Luxury Exotic Car Rental Agent": ("You are a supercar rental coordinator. Find out their target vehicle class and secure contact info to send verification requirements.", "Welcome to our luxury fleet concierge. Ready to secure an elite exotic rental confirmation for tomorrow?"),
-        "Custom Luxury Home Builder Consultant": ("You are an upscale design consultant. Uncover their budget tier, geographical market, and secure a callback line.", "Welcome to our custom estate design portal. Looking to build or remodel a luxury property on your lot?"),
-        "Premium Yacht Charter Concierge": ("You are a private maritime cruise concierge. Get destination layout details, guest numbers, dates, and clear contact numbers.", "Welcome to our premium charter concierge. Planning a private coastal excursion or yacht gathering?"),
-        "Auto Parts & Accessories Specialist": ("You are a parts desk specialist. Secure vehicle specs (year, make, model) along with phone numbers for fulfillment tracking.", "Auto parts specialist here! What vehicle year, make, and model are we sourcing components for today?"),
-        "General ChatGPT AI Workspace": ("You are ChatGPT, a highly helpful assistant. Provide extreme value.", "Welcome to your General ChatGPT AI Workspace! 🚀 Ask me anything!")
-    }
-
-    sys_inst, welcome_msg = profile_rules[business_type]
+    sys_inst, welcome_msg = PROFILE_RULES[business_type]
 
     if "active_profile_selection" not in st.session_state: 
         st.session_state.active_profile_selection = business_type
@@ -151,4 +146,10 @@ def render_lead_booking_agent():
         except Exception as e: 
             st.error(f"System Error: {e}")
 
-def render_judicial_analyzer():
+elif app_mode == "⚖️ Judicial Case Analyzer":
+    st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
+    st.write("Paste legal case texts below. Your text and briefs remain locked securely in runtime memory arrays.")
+    st.divider()
+    
+    case_text = st.text_area("Paste Case Legal Text Here:", value=st.session_state.local_case_vault_text, height=250)
+    if case_text != st.session_state.local_case_vault_text:
