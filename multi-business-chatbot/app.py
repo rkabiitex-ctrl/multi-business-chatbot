@@ -133,7 +133,7 @@ if app_mode == "🤖 AI Lead Booking Agent":
     if st.session_state.lead_extraction_status == "VERIFIED":
         st.success("🚨 TARGET CONTACT INFO SUCCESSFULLY CAPTURED & EXECUTED ON THE BACKEND")
 
-    # FIX: Properly indented vertical block structure for the message rendering engine
+    # Clean vertical block structure for the message rendering engine
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
@@ -148,3 +148,4 @@ if app_mode == "🤖 AI Lead Booking Agent":
         try:
             client = OpenAI()
             api_messages = [{"role": "system", "content": sys_inst}]
+            for m in st.session_state.messages:
