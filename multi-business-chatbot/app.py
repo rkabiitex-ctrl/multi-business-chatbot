@@ -62,7 +62,9 @@ def extract_and_log_lead(user_text, business_profile):
 # 3. SIDEBAR NAVIGATION CONFIGURATIONS
 # ==========================================
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
-app_mode = st.sidebar.radio("Go to Page:", ["🧠 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer", "🏗️ BuildMost Sourcing Hub"])
+
+# FIXED: Emojis strictly mapped to match what is visible on your screen screenshot layout
+app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer", "🏗️ BuildMost Sourcing Hub"])
 st.sidebar.divider()
 
 st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
@@ -162,4 +164,3 @@ def render_judicial_analyzer():
                     st.session_state.local_case_vault_brief = response.choices[0].message.content
                     st.rerun()
                 except Exception as e: st.error(f"Analysis Pipeline Error: {e}")
-        else: st.warning("Please supply valid discovery text logs.")
