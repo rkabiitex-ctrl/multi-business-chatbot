@@ -59,7 +59,9 @@ def extract_and_log_lead(user_text, business_profile):
 # 3. SIDEBAR NAVIGATION & PACKAGES
 # ==========================================
 st.sidebar.markdown('<h2 class="gold-text">🧭 Workspace Navigation</h2>', unsafe_allow_html=True)
-app_mode = st.sidebar.radio("Go to Page:", ["🤖 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
+
+# Emojis updated here to perfectly match what your sidebar menu layout rendered
+app_mode = st.sidebar.radio("Go to Page:", ["🧠 AI Lead Booking Agent", "⚖️ Judicial Case Analyzer"])
 st.sidebar.divider()
 
 st.sidebar.markdown('<h3 class="gold-text">💳 Premium AI Packages</h3>', unsafe_allow_html=True)
@@ -150,4 +152,3 @@ def render_lead_booking_agent():
             st.error(f"System Error: {e}")
 
 def render_judicial_analyzer():
-    st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
