@@ -77,9 +77,9 @@ st.sidebar.link_button("👑 Get Elite ($500/mo)", "PASTE_YOUR_500_PESAPAL_LINK"
 st.sidebar.divider()
 
 # ==========================================
-# 4. APP MODE LOGIC ROUTER
+# 4. MODULAR RENDERING INTERFACES
 # ==========================================
-if app_mode == "🤖 AI Lead Booking Agent":
+def render_lead_booking_agent():
     st.markdown('<h1 class="gold-text">🤖 Universal AI Business Booking Agent</h1>', unsafe_allow_html=True)
     st.write("Select a business category below to test how the AI adapts to capture customer leads via text or voice.")
     
@@ -133,7 +133,6 @@ if app_mode == "🤖 AI Lead Booking Agent":
     chat_input = st.chat_input("Or type your message here manually...")
     if chat_input:
         st.session_state.messages.append({"role": "user", "content": chat_input})
-        
         extract_and_log_lead(chat_input, business_type)
         
         try:
@@ -150,4 +149,5 @@ if app_mode == "🤖 AI Lead Booking Agent":
         except Exception as e: 
             st.error(f"System Error: {e}")
 
-elif app_mode == "⚖️ Judicial Case Analyzer":
+def render_judicial_analyzer():
+    st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
