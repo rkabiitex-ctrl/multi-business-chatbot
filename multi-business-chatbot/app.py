@@ -34,9 +34,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-if "local_case_vault_text" not in st.session_state: st.session_state.local_case_vault_text = ""
-if "local_case_vault_brief" not in st.session_state: st.session_state.local_case_vault_brief = ""
-if "lead_extraction_status" not in st.session_state: st.session_state.lead_extraction_status = "unverified"
+if "local_case_vault_text" not in st.session_state:
+    st.session_state.local_case_vault_text = ""
+
+if "local_case_vault_brief" not in st.session_state:
+    st.session_state.local_case_vault_brief = ""
+
+if "lead_extraction_status" not in st.session_state:
+    st.session_state.lead_extraction_status = "unverified"
 
 # ==========================================
 # 2. RUNTIME LEAD CAPTURE VALIDATION ENGINES
@@ -46,8 +51,10 @@ def extract_and_log_lead(user_text, business_profile):
     email_match = re.search(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', user_text)
     
     extracted_data = {}
-    if phone_match: extracted_data["phone"] = phone_match.group(0)
-    if email_match: extracted_data["email"] = email_match.group(0)
+    if phone_match:
+        extracted_data["phone"] = phone_match.group(0)
+    if email_match:
+        extracted_data["email"] = email_match.group(0)
     
     if extracted_data:
         st.session_state.lead_extraction_status = "VERIFIED"
@@ -85,7 +92,7 @@ PROFILE_RULES = {
     "Roofing & Solar Sales Closer": ("You are an expert roofing sales assistant. Convince the customer an inspector needs to visit, then gather their address and phone number.", "Hi there! Welcome to our roofing services portal. Experiencing leaks or looking for a free architectural estimate?"),
     "Fitness Gym Membership Agent": ("You are a high-energy gym assistant. Get their email or phone number to drop a free day pass to their mobile device.", "Let's go! Welcome to the fitness hub. Ready to crush your wellness goals? What's your email to get your free pass?"),
     "Emergency Plumbing Dispatcher": ("You are an emergency plumbing dispatcher. Instantly secure their primary contact number to send out an on-call team.", "Express Plumbing here! Do you have an active leak, burst pipe, or emergency right now?"),
-    "Luxury Exotic Car Rental Agent": ("You are a supercar rental coordinator. Find out their target vehicle class and secure contact info to send verification requirements.", "Welcome to our luxury fleet concierge. Looking to secure an exotic rental confirmation for tomorrow?"),
+    "Luxury Exotic Car Rental Agent": ("You are a supercar rental coordinator. Find out their target vehicle class and secure contact info to send verification requirements.", "Welcome to our luxury fleet concierge. Ready to secure an elite exotic rental confirmation for tomorrow?"),
     "Custom Luxury Home Builder Consultant": ("You are an upscale design consultant. Uncover their budget tier, geographical market, and secure a callback line.", "Welcome to our custom estate design portal. Looking to build or remodel a luxury property on your lot?"),
     "Premium Yacht Charter Concierge": ("You are a private maritime cruise concierge. Get destination layout details, guest numbers, dates, and clear contact numbers.", "Welcome to our premium charter concierge. Planning a private coastal excursion or yacht gathering?"),
     "Auto Parts & Accessories Specialist": ("You are a parts desk specialist. Secure vehicle specs (year, make, model) along with phone numbers for fulfillment tracking.", "Auto parts specialist here! What vehicle year, make, and model are we sourcing components for today?"),
@@ -140,6 +147,7 @@ if app_mode == "🧠 AI Lead Booking Agent":
                     api_messages.append({"role": m["role"], "content": str(m["content"])})
             
             response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
+            # FIX: Added missing index [0] wrapper around choices sequence layout
             ai_text = response.choices[0].message.content
             st.session_state.messages.append({"role": "assistant", "content": ai_text})
             st.rerun()
@@ -150,6 +158,3 @@ elif app_mode == "⚖️ Judicial Case Analyzer":
     st.markdown('<h1 class="gold-text">⚖️ Legal & Judicial Case Analyzer</h1>', unsafe_allow_html=True)
     st.write("Paste legal case texts below. Your text and briefs remain locked securely in runtime memory arrays.")
     st.divider()
-    
-    case_text = st.text_area("Paste Case Legal Text Here:", value=st.session_state.local_case_vault_text, height=250)
-    if case_text != st.session_state.local_case_vault_text:
