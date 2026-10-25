@@ -9,7 +9,6 @@ from datetime import datetime
 # ==========================================
 st.set_page_config(page_title="Elite AI Workspace", page_icon="🤖", layout="wide")
 
-# Fixed the text invisibility issues by enforcing specific button typography states
 st.markdown("""
     <style>
         .stApp { background-color: #0d0f12 !important; color: #e2e8f0 !important; }
@@ -21,7 +20,6 @@ st.markdown("""
         .package-header { color: #bf953f !important; font-weight: bold !important; font-size: 18px !important; margin-bottom: 2px !important; }
         .package-desc { color: #e2e8f0 !important; font-size: 14px !important; margin-bottom: 10px !important; }
         
-        /* FIX: Forces all button elements (including links) to have explicit white, high-contrast, bold text */
         .stButton>button, .stLinkButton>a {
             color: #ffffff !important;
             font-weight: bold !important;
@@ -36,7 +34,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Initialize Session Cache Memory Structures Safely
 if "local_case_vault_text" not in st.session_state: st.session_state.local_case_vault_text = ""
 if "local_case_vault_brief" not in st.session_state: st.session_state.local_case_vault_brief = ""
 if "lead_extraction_status" not in st.session_state: st.session_state.lead_extraction_status = "unverified"
@@ -45,7 +42,6 @@ if "lead_extraction_status" not in st.session_state: st.session_state.lead_extra
 # 2. RUNTIME LEAD CAPTURE VALIDATION ENGINES
 # ==========================================
 def extract_and_log_lead(user_text, business_profile):
-    """Programmatically checks for valid contact info within inbound chat sequences."""
     phone_match = re.search(r'(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}\text[-.\s]?\d{4}|\b\d{10}\b', user_text)
     email_match = re.search(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', user_text)
     
@@ -99,7 +95,6 @@ if app_mode == "🤖 AI Lead Booking Agent":
         key="master_business_selector_v3"
     )
 
-    # Context Mapping Matrix Injection
     profile_rules = {
         "Global Dental Clinic Receptionist": ("You are a receptionist for a dental clinic. Systematically ask for their phone number or contact info to secure an urgent treatment slot tomorrow.", "Hello! Thanks for visiting our dental page today. Looking to book an urgent cleaning or checkup tomorrow?"),
         "Elite Med-Spa & Cosmetics Concierge": ("You are an elite booking concierge for a medical spa. Secure their phone number or WhatsApp to reserve aesthetics services.", "Welcome to our premier aesthetics concierge. ✨ Looking to explore skin treatments today?"),
@@ -115,7 +110,6 @@ if app_mode == "🤖 AI Lead Booking Agent":
 
     sys_inst, welcome_msg = profile_rules[business_type]
 
-    # Session Memory Synchronization Blocks
     if "active_profile_selection" not in st.session_state: 
         st.session_state.active_profile_selection = business_type
         st.session_state.messages = [{"role": "assistant", "content": welcome_msg}]
@@ -129,11 +123,9 @@ if app_mode == "🤖 AI Lead Booking Agent":
         st.session_state.messages = [{"role": "assistant", "content": welcome_msg}]
         st.session_state.lead_extraction_status = "unverified"
 
-    # Display active lead status inside agent portals
     if st.session_state.lead_extraction_status == "VERIFIED":
         st.success("🚨 TARGET CONTACT INFO SUCCESSFULLY CAPTURED & EXECUTED ON THE BACKEND")
 
-    # Clean vertical block structure for the message rendering engine
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
@@ -142,10 +134,20 @@ if app_mode == "🤖 AI Lead Booking Agent":
     if chat_input:
         st.session_state.messages.append({"role": "user", "content": chat_input})
         
-        # Scrape and process text segments locally before hitting LLM loops
         extract_and_log_lead(chat_input, business_type)
         
         try:
             client = OpenAI()
             api_messages = [{"role": "system", "content": sys_inst}]
             for m in st.session_state.messages:
+                if m["role"] in ["user", "assistant"]: 
+                    api_messages.append({"role": m["role"], "content": str(m["content"])})
+            
+            response = client.chat.completions.create(model="gpt-4o-mini", messages=api_messages)
+            ai_text = response.choices[0].message.content
+            st.session_state.messages.append({"role": "assistant", "content": ai_text})
+            st.rerun()
+        except Exception as e: 
+            st.error(f"System Error: {e}")
+
+elif app_mode == "⚖️ Judicial Case Analyzer":
